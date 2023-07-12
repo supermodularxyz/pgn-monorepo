@@ -52,7 +52,7 @@ export const BridgeProvider = ({ config, children }: BridgeProps) => {
   );
 };
 
-function mergeConfig(config: Omit<PGNConfig, "theme">) {
+function mergeConfig(config: PGNConfig) {
   let merged = merge(config, defaultConfig) as PGNConfig;
   const { networks } = merged;
   const tokens = merged.tokens.filter(
