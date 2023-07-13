@@ -1,10 +1,8 @@
-import { Chain } from "wagmi/chains";
-
 export const pgn = {
   id: 424,
   name: "PGN",
   network: "pgn",
-  nativeCurrency: { name: "Ether", symbol: "gETH", decimals: 18 },
+  nativeCurrency: { name: "Ether", symbol: "pgnETH", decimals: 18 },
   rpcUrls: {
     default: {
       http: ["https://rpc.publicgoods.network"],
