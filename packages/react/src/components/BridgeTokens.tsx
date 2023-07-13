@@ -1,5 +1,4 @@
-import { ethers } from "ethers";
-import { Chain, useClient, useNetwork } from "wagmi";
+import { Chain, useNetwork } from "wagmi";
 import { z } from "zod";
 
 import { usePGN } from "..";
@@ -13,7 +12,8 @@ import { TransferLog } from "./TransferLog";
 import { ErrorMessage } from "./ErrorMessage";
 import { useSelectedToken } from "../hooks/useSelectedToken";
 import { Card } from "./ui/Card";
-import { PropsWithChildren, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { parseEther } from "viem";
 
 export const Actions = {
   Deposit: "Deposit",
@@ -57,7 +57,6 @@ function useAction() {
 }
 
 export const BridgeTokens = () => {
-  const pgn = usePGN();
   const getToken = useSelectedToken();
 
   const {
@@ -80,7 +79,7 @@ export const BridgeTokens = () => {
       schema={BridgeSchema}
       onSubmit={(values, form) => {
         console.log("Submit", values);
-        const amount = ethers.utils.parseEther(String(values.amount));
+        const amount = parseEther(String(values.amount)).toString();
         const token = getToken(values.token);
         return mutate(
           { amount, token },

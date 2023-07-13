@@ -1,10 +1,9 @@
-import { Chain, useAccount, useNetwork, useSwitchNetwork } from "wagmi";
+import { parseEther } from "viem";
+import { Chain, useAccount, useNetwork } from "wagmi";
 import { useFormContext } from "react-hook-form";
-import { parseEther } from "ethers/lib/utils.js";
 
-import { Button, PrimaryButton, SecondaryButton } from "./ui/Button";
+import { Button, PrimaryButton } from "./ui/Button";
 import { useTokenBalance } from "../hooks/useTokenBalance";
-import { usePGN } from "..";
 import { ErrorMessage } from "./ErrorMessage";
 import { ConnectWallet } from "./ConnectButton";
 
@@ -44,9 +43,10 @@ export function TransferAction({
       </Button>
     );
   }
+
   const balanceOverAmount =
     amount &&
-    balance?.value?.gte(parseEther(String(parseFloat(amount).toFixed(18))));
+    balance?.value > parseEther(String(parseFloat(amount).toFixed(18)));
 
   if (balanceOverAmount) {
     return (

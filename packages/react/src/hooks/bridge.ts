@@ -2,13 +2,12 @@ import { useState } from "react";
 
 import { MessageStatus } from "@eth-optimism/sdk";
 import { useMutation } from "@tanstack/react-query";
-import { BigNumber } from "ethers";
 import { useCrossChainMessenger } from "./crossChainMessenger";
 import { Token } from "../types";
 import { useTokenAddresses } from "./useSelectedToken";
 
 type TransferRequest = {
-  amount: BigNumber;
+  amount: string;
   token?: Token;
 };
 
