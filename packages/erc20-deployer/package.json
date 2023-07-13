@@ -1,0 +1,16 @@
+{
+  "name": "@pgn/erc20-deployer",
+  "scripts": {
+    "deploy": "hardhat deploy"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.0",
+    "dotenv": "^16.3.1",
+    "hardhat": "^2.14.0"
+  },
+  "dependencies": {
+    "@eth-optimism/contracts-bedrock": "^0.15.0",
+    "@openzeppelin/contracts": "^4.9.2",
+    "ethers": "^5.7.2"
+  }
+}
