@@ -20,7 +20,7 @@ export const pgn = {
     },
   },
   contracts: {},
-} as const satisfies Chain;
+};
 
 export const pgnTestnet = {
   id: 58008,
@@ -42,4 +42,4 @@ export const pgnTestnet = {
     },
   },
   contracts: {},
-} as const satisfies Chain;
+};
