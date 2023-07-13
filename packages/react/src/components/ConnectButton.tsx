@@ -6,7 +6,7 @@ import { Chain, useSwitchNetwork } from "wagmi";
 export function ConnectWallet({
   chain,
   ...props
-}: { chain: Chain } & ComponentPropsWithoutRef<"button">) {
+}: { chain?: Chain } & ComponentPropsWithoutRef<"button">) {
   const { switchNetwork } = useSwitchNetwork();
   return (
     <ConnectButton.Custom>
@@ -53,7 +53,7 @@ export function ConnectWallet({
                     type="button"
                     {...props}
                   >
-                    Switch to {chain.name}
+                    Switch to {chain?.name}
                   </PrimaryButton>
                 );
               }

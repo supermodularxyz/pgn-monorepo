@@ -7,7 +7,7 @@ import * as networks from "./config/networks";
 export * as networks from "./config/networks";
 
 export * from "./components/BridgeTokens";
-export * from "./components/Withdrawals";
+export * from "./components/Transactions";
 export * from "./providers/Wagmi";
 
 import { PGNConfig, Token } from "./types";
@@ -46,7 +46,7 @@ export const BridgeProvider = ({ config, children }: BridgeProps) => {
   }, [state]);
 
   return (
-    <WagmiProvider>
+    <WagmiProvider pgnConfig={config}>
       <Context.Provider value={state}>{children}</Context.Provider>
     </WagmiProvider>
   );

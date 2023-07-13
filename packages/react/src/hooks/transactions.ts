@@ -1,4 +1,3 @@
-"use client";
 import { useAccount } from "wagmi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCrossChainMessenger } from "./crossChainMessenger";

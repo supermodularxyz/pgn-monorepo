@@ -1,10 +1,13 @@
 import { Layout } from "../components/Layout";
 
-export default function Transactions() {
+import { Transactions } from "@pgn/react";
+
+export default function TransactionsPage() {
   return (
     <Layout>
-      <div className="pb-16 pt-40">
-        <h1 className="text-4xl">Transactions</h1>
+      <div className="pb-16 pt-4">
+        <h1 className="mb-4 text-3xl font-bold">Transactions</h1>
+        <Transactions />
       </div>
     </Layout>
   );

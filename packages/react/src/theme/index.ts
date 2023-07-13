@@ -1,9 +1,16 @@
 export const theme = {
+  alert: {
+    padding: 16,
+    borderRadius: 12,
+  },
   card: {
     padding: 24,
     width: 434,
     borderRadius: 16,
     background: "#f3f3f5",
+  },
+  link: {
+    color: "#6BC61F",
   },
   buttons: {
     base: {
