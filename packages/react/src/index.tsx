@@ -1,10 +1,10 @@
 import "./styles.css";
 import { createContext, useContext, useEffect } from "react";
-import { sepolia } from "wagmi/chains";
 
-import * as chains from "./config/chain";
 export * as chains from "./config/chain";
 export * as tokens from "./config/tokens";
+import * as networks from "./config/networks";
+export * as networks from "./config/networks";
 
 export * from "./components/BridgeTokens";
 export * from "./components/Withdrawals";
@@ -19,8 +19,8 @@ const defaultConfig = {
   tokens: [],
   theme: theme,
   networks: {
-    l1: sepolia,
-    l2: chains.pgn,
+    l1: networks.supportedChains.sepolia,
+    l2: networks.supportedChains.pgnTestnet,
   },
 };
 const Context = createContext<PGNConfig>(defaultConfig);

@@ -1,7 +1,7 @@
 export const theme = {
   card: {
     padding: 24,
-    minWidth: 434,
+    width: 434,
     borderRadius: 16,
     background: "#f3f3f5",
   },

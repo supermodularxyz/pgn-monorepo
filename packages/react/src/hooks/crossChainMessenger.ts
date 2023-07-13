@@ -1,5 +1,3 @@
-import { useAccount } from "wagmi";
-
 import { CrossChainMessenger } from "@eth-optimism/sdk";
 import { getOptimismConfiguration } from "@conduitxyz/sdk";
 
@@ -29,7 +27,6 @@ export function useCrossChainMessenger({
   l1AsSigner = false,
   readonly = false,
 } = {}) {
-  const { address } = useAccount();
   const {
     networks: { l1, l2 },
   } = usePGN();

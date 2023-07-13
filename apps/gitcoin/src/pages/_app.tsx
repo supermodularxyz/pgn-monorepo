@@ -3,9 +3,9 @@ import "@pgn/react/styles.css";
 
 import { type AppType } from "next/dist/shared/lib/utils";
 
-import { BridgeProvider, chains, tokens } from "@pgn/react";
+import { BridgeProvider, tokens, networks } from "@pgn/react";
 
-import { sepolia } from "wagmi/chains";
+const { mainnet, sepolia, pgn, pgnTestnet } = networks.supportedChains;
 
 const gitcoinTheme = {
   card: {
@@ -60,7 +60,7 @@ const config = {
   // Configs with RPC url and chain IDs
   networks: {
     l1: sepolia,
-    l2: chains.pgnTestnet,
+    l2: pgnTestnet,
   },
 };
 
