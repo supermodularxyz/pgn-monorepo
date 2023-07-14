@@ -1,3 +1,5 @@
+import { Token } from "../types";
+
 export const ETH = {
   name: "ETH",
   symbol: "ETH",

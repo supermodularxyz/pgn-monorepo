@@ -16,6 +16,7 @@ export type Theme = {
     primary: Style;
     secondary: Style;
   };
+  link: Style;
   input: Style;
   label: Style;
 };
@@ -28,7 +29,7 @@ export type Token = {
   website?: string;
   twitter?: string;
   tokens: {
-    [network: string]: { address?: Address };
+    [network: string]: { address?: Address | string };
   };
 };
 

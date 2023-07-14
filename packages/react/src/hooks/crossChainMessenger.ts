@@ -63,14 +63,11 @@ export function useCrossChainMessenger({
 
   return useQuery(
     ["crosschain-messenger", { l1AsSigner, readonly }],
-    async () => {
-      console.log("create crosschainmessenger");
-
-      return createCrossChainMessenger(
+    async () =>
+      createCrossChainMessenger(
         { l1SignerOrProvider, l2SignerOrProvider },
         getConduitSlug(l2.network as any)
-      );
-    },
+      ),
     { enabled: Boolean(l1SignerOrProvider && l2SignerOrProvider) }
   );
 }

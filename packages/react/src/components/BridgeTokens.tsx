@@ -70,7 +70,6 @@ export const BridgeTokens = memo(() => {
     <Form
       schema={BridgeSchema}
       onSubmit={(values, form) => {
-        console.log("Submit", values);
         const amount = parseEther(String(values.amount)).toString();
         const token = getToken(values.token);
         return mutate(
