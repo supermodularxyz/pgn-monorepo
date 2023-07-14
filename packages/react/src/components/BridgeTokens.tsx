@@ -12,7 +12,7 @@ import { TransferLog } from "./TransferLog";
 import { ErrorMessage } from "./ErrorMessage";
 import { useSelectedToken } from "../hooks/useSelectedToken";
 import { Card } from "./ui/Card";
-import { memo, useEffect, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import { parseEther } from "viem";
 
 export const Actions = {
@@ -65,12 +65,6 @@ export const BridgeTokens = memo(() => {
     chainOut,
     hook: { isLoading, log, error, mutate },
   } = useAction();
-
-  const [hasLoaded, setLoading] = useState(false);
-  useEffect(() => {
-    setLoading(true);
-  }, []);
-  if (!hasLoaded) return null;
 
   return (
     <Form

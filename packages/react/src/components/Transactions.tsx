@@ -22,6 +22,7 @@ import {
 } from "../hooks/transactions";
 
 import { usePGN } from "..";
+import { Skeleton } from "./ui/Skeleton";
 
 export const Transactions = () => {
   const {
@@ -201,13 +202,3 @@ const WithdrawAction = memo(
     }
   }
 );
-
-const Skeleton = ({
-  isLoading = false,
-  children,
-}: PropsWithChildren & { isLoading: boolean }) =>
-  isLoading ? (
-    <div className="bg-gray-300 h-4 min-w-[20px] animate-pulse" />
-  ) : (
-    <>{children}</>
-  );
