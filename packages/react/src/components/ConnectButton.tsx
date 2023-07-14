@@ -12,14 +12,13 @@ export function ConnectWallet({
     <ConnectButton.Custom>
       {({
         account,
-        chain: { unsupported } = {},
+        chain: { id, unsupported } = {},
         openConnectModal,
         authenticationStatus,
         mounted,
       }) => {
         const ready = mounted && authenticationStatus !== "loading";
         const connected = ready && account;
-
         return (
           <div
             {...(!ready && {
@@ -45,7 +44,7 @@ export function ConnectWallet({
                 );
               }
 
-              if (unsupported) {
+              if (unsupported || id !== chain?.id) {
                 return (
                   <PrimaryButton
                     className="w-full"
