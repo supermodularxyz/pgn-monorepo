@@ -56,7 +56,7 @@ export function TransferAction({
         type="submit"
         disabled={isLoading}
       >
-        {action}
+        {isLoading ? "Processing..." : action}
       </PrimaryButton>
     );
   }
