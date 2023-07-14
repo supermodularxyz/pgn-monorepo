@@ -6,6 +6,7 @@ export * as tokens from "./config/tokens";
 import * as networks from "./config/networks";
 export * as networks from "./config/networks";
 
+export * from "./components/AccountButton";
 export * from "./components/BridgeTokens";
 export * from "./components/Transactions";
 export * from "./providers/Wagmi";
@@ -47,7 +48,7 @@ export const BridgeProvider = memo(({ config, children }: BridgeProps) => {
   }, [state]);
 
   return (
-    <WagmiProvider pgnConfig={config}>
+    <WagmiProvider pgnConfig={state}>
       <Context.Provider value={state}>{children}</Context.Provider>
     </WagmiProvider>
   );

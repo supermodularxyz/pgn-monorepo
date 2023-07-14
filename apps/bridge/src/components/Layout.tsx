@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { PropsWithChildren } from "react";
 import clsx from "clsx";
 
+import { AccountButton } from "@pgn/react";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import {
   BuilderIcon,
@@ -26,28 +27,6 @@ const navItems = [
     href: "https://docs.publicgoods.network",
     target: "_blank",
   },
-  {
-    label: "Grants Stack",
-    href: "",
-    icon: <GrantsIcon />,
-    children: [
-      {
-        icon: <ExplorerIcon />,
-        label: "Explorer",
-        href: "#",
-      },
-      {
-        icon: <BuilderIcon />,
-        label: "Builder",
-        href: "#",
-      },
-      {
-        icon: <ManagerIcon />,
-        label: "Manager",
-        href: "#",
-      },
-    ],
-  },
 ];
 
 export const Layout = ({ children }: PropsWithChildren) => {
@@ -55,7 +34,12 @@ export const Layout = ({ children }: PropsWithChildren) => {
     <main>
       <header className="container mx-auto flex h-20 items-center justify-between">
         <Logo />
-        <Navigation />
+        <div className="flex items-center gap-8">
+          <Navigation />
+          <div className="hidden md:block">
+            <AccountButton />
+          </div>
+        </div>
       </header>
       <div className="container mx-auto p-4 md:p-8">{children}</div>
     </main>
