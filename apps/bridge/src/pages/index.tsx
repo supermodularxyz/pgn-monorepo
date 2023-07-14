@@ -8,7 +8,9 @@ export default function Index() {
   return (
     <Layout>
       <div className="flex justify-center pb-16 pt-40">
-        <BridgeTokens />
+        <div className="min-h-[377px]">
+          <BridgeTokens />
+        </div>
       </div>
       <GettingStarted />
       <Image
