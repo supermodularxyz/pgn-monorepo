@@ -23,30 +23,10 @@ export async function createOptimismERC20({
     deployer
   );
 
-  // return;
-
-  // const estimatedGas =
-  const estimatedGas =
-    await optimismMintableERC20Factory.estimateGas.createOptimismMintableERC20(
-      l1address,
-      name,
-      symbol,
-      {
-        gasPrice: ethers.utils.parseUnits("20", "gwei"),
-      }
-    );
-
-  console.log("gas estimate", ethers.utils.formatEther(estimatedGas));
-  // return;
-  return;
   const tx = await optimismMintableERC20Factory.createOptimismMintableERC20(
     l1address,
     name,
-    symbol,
-    {
-      gasPrice: ethers.utils.parseUnits("10", "gwei"),
-      gasLimit: 2100000,
-    }
+    symbol
   );
 
   await tx.wait();
