@@ -1,10 +1,16 @@
+import { useSwitchToPGN } from "@pgn/react";
+
 export const GettingStarted = () => {
+  const switchToPGN = useSwitchToPGN();
   const steps = [
     "Connect your wallet to the Ethereum network.",
     "Make sure you have some funds in your ETH wallet.",
     <>
       Add the PGN network to your wallet. Add PGN to your wallet with one click{" "}
-      <a className="underline">here</a>.
+      <a className="cursor-pointer underline" onClick={switchToPGN}>
+        here
+      </a>
+      .
     </>,
     "Input the amount of ETH you want to bridge over to PGN.",
     "Click Deposit in order to get the transaction started.",
@@ -42,7 +48,11 @@ export const GettingStarted = () => {
       </ol>
       <div className="text-sm">
         For more in-depth steps, check out the{" "}
-        <a className="underline" target="_blank" href="about:blank">
+        <a
+          className="underline"
+          target="_blank"
+          href="https://docs.publicgoods.network"
+        >
           PGN guide.
         </a>
       </div>

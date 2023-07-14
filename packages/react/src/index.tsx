@@ -9,6 +9,7 @@ export * as networks from "./config/networks";
 export * from "./components/BridgeTokens";
 export * from "./components/Transactions";
 export * from "./providers/Wagmi";
+export * from "./hooks/switchNetwork";
 
 import { PGNConfig, Token } from "./types";
 import { merge } from "./utils/merge";
