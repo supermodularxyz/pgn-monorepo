@@ -23,7 +23,7 @@ export const WagmiProvider = ({
 
     const { connectors } = getDefaultWallets({
       appName: "PGN Bridge",
-      projectId: "PGN",
+      projectId: "4e43a05dd632c288318350b90b950400",
       chains,
     });
 
