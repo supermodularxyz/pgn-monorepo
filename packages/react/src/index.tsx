@@ -1,5 +1,5 @@
 import "./styles.css";
-import { createContext, useContext, useEffect } from "react";
+import { createContext, memo, useContext, useEffect } from "react";
 
 export * as chains from "./config/chain";
 export * as tokens from "./config/tokens";
@@ -29,7 +29,7 @@ export const usePGN = () => useContext(Context);
 
 type BridgeProps = { config: PGNConfig } & React.PropsWithChildren;
 
-export const BridgeProvider = ({ config, children }: BridgeProps) => {
+export const BridgeProvider = memo(({ config, children }: BridgeProps) => {
   const state = mergeConfig(config);
 
   useEffect(() => {
@@ -50,7 +50,7 @@ export const BridgeProvider = ({ config, children }: BridgeProps) => {
       <Context.Provider value={state}>{children}</Context.Provider>
     </WagmiProvider>
   );
-};
+});
 
 function mergeConfig(config: PGNConfig) {
   let merged = merge(config, defaultConfig) as PGNConfig;

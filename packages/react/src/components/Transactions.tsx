@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, memo } from "react";
 import { useAccount, useNetwork } from "wagmi";
 import { TokenBridgeMessage } from "@eth-optimism/sdk";
 
@@ -58,10 +58,9 @@ export const Transactions = () => {
   return <TransactionsTable />;
 };
 
-const TransactionsTable = () => {
+const TransactionsTable = memo(() => {
   const { data, error, isLoading } = useWithdrawals();
   const { data: challengePeriod } = useChallengePeriod();
-
   return (
     <Table>
       <Thead>
@@ -101,7 +100,7 @@ const TransactionsTable = () => {
       </Tbody>
     </Table>
   );
-};
+});
 
 const withdrawStatusMap = {
   2: "Waiting for state root",
@@ -110,97 +109,98 @@ const withdrawStatusMap = {
   5: "Ready to relay",
   6: "Relayed",
 };
-const TransactionRow = ({
-  transactionHash,
-  blockNumber,
-  challengePeriod = 0,
-}: TokenBridgeMessage & { challengePeriod?: number }) => {
-  const { data: timestamp = 0 } = useBlock(blockNumber);
-  const {
-    networks: { l1, l2 },
-  } = usePGN();
-  const status = useWithdrawalStatus(transactionHash);
-  const receipt = useWithdrawalReceipt(transactionHash, status?.data as number);
-  const l1hash = receipt.data?.transactionReceipt.transactionHash;
-  const statusText =
-    withdrawStatusMap[status.data as keyof typeof withdrawStatusMap] ||
-    "<unknown>";
+const TransactionRow = memo(
+  ({
+    transactionHash,
+    blockNumber,
+    challengePeriod = 0,
+  }: TokenBridgeMessage & { challengePeriod?: number }) => {
+    const { data: timestamp = 0 } = useBlock(blockNumber);
+    const {
+      networks: { l1, l2 },
+    } = usePGN();
+    const status = useWithdrawalStatus(transactionHash);
+    const receipt = useWithdrawalReceipt(
+      transactionHash,
+      status?.data as number
+    );
+    const l1hash = receipt.data?.transactionReceipt.transactionHash;
+    const statusText =
+      withdrawStatusMap[status.data as keyof typeof withdrawStatusMap] ||
+      "<unknown>";
 
-  const timeLeft = timeAgo(timestamp + challengePeriod);
-  return (
-    <Tr>
-      <Td>
-        <Link
-          className="font-mono"
-          target="_blank"
-          title={transactionHash}
-          href={`${l2.blockExplorers?.default.url}/tx/${transactionHash}`}
-        >
-          {truncate(transactionHash)}
-        </Link>
-      </Td>
-      <Td>
-        <Skeleton isLoading={status.isLoading}>{statusText}</Skeleton>
-      </Td>
-      <Td>{timestamp ? <>{timeAgo(timestamp)}</> : null}</Td>
-      <Td>
-        <Skeleton isLoading={receipt.isLoading}>
-          {l1hash ? (
-            <Link
-              className="font-mono"
-              target="_blank"
-              title={l1hash}
-              href={`${l1.blockExplorers?.default.url}/tx/${l1hash}`}
-            >
-              {truncate(l1hash)}
-            </Link>
-          ) : (
-            "N/A"
-          )}
-        </Skeleton>
-      </Td>
-      <Td>{timeLeft}</Td>
-      <Td>
-        <WithdrawAction hash={transactionHash} status={status.data} />
-      </Td>
-    </Tr>
-  );
-};
-
-const WithdrawAction = ({
-  hash,
-  status,
-}: {
-  hash: string;
-  status?: number;
-}) => {
-  const prove = useProve();
-  const finalize = useFinalize();
-  switch (status) {
-    case 3:
-      return (
-        <Button
-          color="primary"
-          onClick={() => prove.mutate(hash)}
-          disabled={prove.isLoading}
-        >
-          Prove
-        </Button>
-      );
-    case 5:
-      return (
-        <Button
-          color="primary"
-          onClick={() => finalize.mutate(hash)}
-          disabled={finalize.isLoading}
-        >
-          Finalize
-        </Button>
-      );
-    default:
-      return null;
+    const timeLeft = timestamp ? timeAgo(timestamp + challengePeriod) : null;
+    return (
+      <Tr>
+        <Td>
+          <Link
+            className="font-mono"
+            target="_blank"
+            title={transactionHash}
+            href={`${l2.blockExplorers?.default.url}/tx/${transactionHash}`}
+          >
+            {truncate(transactionHash)}
+          </Link>
+        </Td>
+        <Td>
+          <Skeleton isLoading={status.isLoading}>{statusText}</Skeleton>
+        </Td>
+        <Td>{timestamp ? <>{timeAgo(timestamp)}</> : null}</Td>
+        <Td>
+          <Skeleton isLoading={receipt.isLoading}>
+            {l1hash ? (
+              <Link
+                className="font-mono"
+                target="_blank"
+                title={l1hash}
+                href={`${l1.blockExplorers?.default.url}/tx/${l1hash}`}
+              >
+                {truncate(l1hash)}
+              </Link>
+            ) : (
+              "N/A"
+            )}
+          </Skeleton>
+        </Td>
+        <Td>{timeLeft}</Td>
+        <Td>
+          <WithdrawAction hash={transactionHash} status={status.data} />
+        </Td>
+      </Tr>
+    );
   }
-};
+);
+
+const WithdrawAction = memo(
+  ({ hash, status }: { hash: string; status?: number }) => {
+    const prove = useProve();
+    const finalize = useFinalize();
+    switch (status) {
+      case 3:
+        return (
+          <Button
+            color="primary"
+            onClick={() => prove.mutate(hash)}
+            disabled={prove.isLoading}
+          >
+            Prove
+          </Button>
+        );
+      case 5:
+        return (
+          <Button
+            color="primary"
+            onClick={() => finalize.mutate(hash)}
+            disabled={finalize.isLoading}
+          >
+            Finalize
+          </Button>
+        );
+      default:
+        return null;
+    }
+  }
+);
 
 const Skeleton = ({
   isLoading = false,

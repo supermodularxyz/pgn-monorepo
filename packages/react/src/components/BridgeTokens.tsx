@@ -12,7 +12,7 @@ import { TransferLog } from "./TransferLog";
 import { ErrorMessage } from "./ErrorMessage";
 import { useSelectedToken } from "../hooks/useSelectedToken";
 import { Card } from "./ui/Card";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { parseEther } from "viem";
 
 export const Actions = {
@@ -56,7 +56,7 @@ function useAction() {
   }, [network, l1, l2]);
 }
 
-export const BridgeTokens = () => {
+export const BridgeTokens = memo(() => {
   const getToken = useSelectedToken();
 
   const {
@@ -71,8 +71,6 @@ export const BridgeTokens = () => {
     setLoading(true);
   }, []);
   if (!hasLoaded) return null;
-
-  console.log("render bridge");
 
   return (
     <Form
@@ -97,4 +95,4 @@ export const BridgeTokens = () => {
       </Card>
     </Form>
   );
-};
+});
