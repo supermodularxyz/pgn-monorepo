@@ -5,16 +5,19 @@ import { type AppType } from "next/dist/shared/lib/utils";
 
 import { BridgeProvider, tokens, networks } from "@pgn/react";
 
-const { mainnet, sepolia, pgn, pgnTestnet } = networks.supportedChains;
+const l1 = networks.supportedChains[process.env.NEXT_PUBLIC_L1 || "sepolia"];
+const l2 = networks.supportedChains[process.env.NEXT_PUBLIC_L2 || "pgnTestnet"];
 
+if (!(l1 && l2)) {
+  throw new Error(
+    "NEXT_PUBLIC_L1 and L2 must be configured in .env to supported networks"
+  );
+}
 const config = {
   // Tokens to be shown in the UI
   tokens: [tokens.ETH, tokens.TestToken],
   // Configs with RPC url and chain IDs
-  networks: {
-    l1: sepolia,
-    l2: pgnTestnet,
-  },
+  networks: { l1, l2 },
 };
 
 const MyApp: AppType = ({ Component, pageProps }) => {
