@@ -75,8 +75,8 @@ const Navigation = () => {
             })}
           >
             {item.href ? (
-              <NavigationMenu.Link href={item.href}>
-                {item.label}
+              <NavigationMenu.Link asChild>
+                <Link {...item}>{item.label}</Link>
               </NavigationMenu.Link>
             ) : (
               <>
