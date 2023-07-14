@@ -24,7 +24,7 @@ export const pgnTestnet = {
   id: 58008,
   name: "PGN Testnet",
   network: "pgnTestnet",
-  nativeCurrency: { name: "Ether", symbol: "gETH", decimals: 18 },
+  nativeCurrency: { name: "Ether", symbol: "pgnETH", decimals: 18 },
   rpcUrls: {
     default: {
       http: ["https://sepolia.publicgoods.network"],
