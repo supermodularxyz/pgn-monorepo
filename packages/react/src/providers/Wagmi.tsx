@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { WagmiConfig, configureChains, createConfig } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
-import { publicProvider } from "wagmi/providers/public";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { PGNConfig } from "../types";
 
 const queryClient = new QueryClient({
@@ -11,6 +11,8 @@ const queryClient = new QueryClient({
   },
 });
 
+const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
+
 export const WagmiProvider = ({
   children,
   pgnConfig,
@@ -18,7 +20,16 @@ export const WagmiProvider = ({
   const { config, chains } = useMemo(() => {
     const networks = Object.values(pgnConfig.networks);
     const { chains, publicClient } = configureChains(networks, [
-      publicProvider(),
+      jsonRpcProvider({
+        rpc: (chain) => {
+          const { alchemy, default: _default } = chain.rpcUrls;
+          const http = alchemy
+            ? `${alchemy.http[0]}/${alchemyKey}`
+            : _default.http[0];
+
+          return { http };
+        },
+      }),
     ]);
 
     const { connectors } = getDefaultWallets({
