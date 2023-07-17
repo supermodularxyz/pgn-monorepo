@@ -23,7 +23,6 @@ import {
 
 import { usePGN } from "..";
 import { Skeleton } from "./ui/Skeleton";
-import { Spinner } from "./Spinner";
 
 export const Transactions = () => {
   const {
