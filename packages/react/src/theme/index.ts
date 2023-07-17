@@ -5,7 +5,6 @@ export const theme = {
   },
   card: {
     padding: 24,
-    width: 434,
     borderRadius: 16,
     background: "#f3f3f5",
   },

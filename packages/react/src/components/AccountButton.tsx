@@ -9,6 +9,7 @@ export function AccountButton(
       {({ account }) => {
         return account ? (
           <ConnectButton
+            chainStatus={"none"}
             accountStatus="address"
             showBalance={false}
             {...props}

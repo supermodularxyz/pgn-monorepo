@@ -6,8 +6,8 @@ import { BridgeTokens } from "@pgn/react";
 export default function Index() {
   return (
     <Layout>
-      <div className="flex justify-center pb-16 pt-40">
-        <div className="min-h-[377px]">
+      <div className="flex justify-center pb-16 pt-24 md:pt-40">
+        <div className="min-h-[377px] max-w-md flex-1">
           <BridgeTokens />
         </div>
       </div>
@@ -28,8 +28,6 @@ export default function Index() {
         />
         <div
           style={{
-            // top: "-50%",
-            // left: "-50%",
             position: "absolute",
             width: "100%",
             height: "100%",
