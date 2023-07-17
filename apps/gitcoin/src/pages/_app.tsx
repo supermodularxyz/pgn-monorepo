@@ -4,64 +4,22 @@ import "@pgn/react/styles.css";
 import { type AppType } from "next/dist/shared/lib/utils";
 
 import { BridgeProvider, tokens, networks } from "@pgn/react";
+import { theme } from "../theme";
 
-const { mainnet, sepolia, pgn, pgnTestnet } = networks.supportedChains;
+const l1 = networks.supportedChains[process.env.NEXT_PUBLIC_L1 || "sepolia"];
+const l2 = networks.supportedChains[process.env.NEXT_PUBLIC_L2 || "pgnTestnet"];
 
-const gitcoinTheme = {
-  card: {
-    padding: 24,
-    borderRadius: 32,
-    background: "#ece7d5",
-  },
-  buttons: {
-    base: {
-      fontSize: 16,
-      fontFamily: "monospace",
-      borderRadius: 12,
-      padding: "12px 8px",
-      background: "#fff",
-    },
-    primary: {
-      color: "#fff",
-      background: "#15322b",
-    },
-    secondary: {
-      background: "transparent",
-      boxShadow: "inset 0 0 0 2px #2c3330",
-    },
-    max: {
-      borderRadius: 12,
-      background: "rgb(251, 247, 243)",
-    },
-    swap: {
-      color: "#fff",
-      background: "#15322b",
-    },
-  },
-  input: {
-    fontFamily: "monospace",
-    borderRadius: 4,
-    fontSize: 16,
-    background: "#fff",
-    color: "#000",
-  },
-
-  label: {
-    fontFamily: "monospace",
-    fontSize: 12,
-    color: "#000",
-  },
-};
-
+if (!(l1 && l2)) {
+  throw new Error(
+    "NEXT_PUBLIC_L1 and L2 must be configured in .env to supported networks"
+  );
+}
 const config = {
-  theme: gitcoinTheme,
+  theme,
   // Tokens to be shown in the UI
   tokens: [tokens.ETH, tokens.TestToken],
   // Configs with RPC url and chain IDs
-  networks: {
-    l1: sepolia,
-    l2: pgnTestnet,
-  },
+  networks: { l1, l2 },
 };
 
 const MyApp: AppType = ({ Component, pageProps }) => {
