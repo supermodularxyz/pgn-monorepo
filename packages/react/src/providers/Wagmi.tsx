@@ -4,6 +4,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { PGNConfig } from "../types";
+import { MockConnector } from "wagmi/connectors/mock";
+import { createWalletClient, http } from "viem";
+import { hardhat } from "wagmi/chains";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -13,6 +16,21 @@ const queryClient = new QueryClient({
 
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 
+const isTest = 1 || process.env.NEXT_PUBLIC_PLAYWRIGHT_ENABLED;
+
+const testConnectors = [
+  new MockConnector({
+    options: {
+      walletClient: createWalletClient({
+        transport: http(hardhat.rpcUrls.default.http[0]),
+        chain: hardhat,
+        account: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        key: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+        pollingInterval: 100,
+      }),
+    },
+  }),
+];
 export const WagmiProvider = ({
   children,
   pgnConfig,
@@ -40,7 +58,7 @@ export const WagmiProvider = ({
 
     const config = createConfig({
       autoConnect: true,
-      connectors,
+      connectors: isTest ? testConnectors : connectors,
       publicClient,
     });
     return { config, chains };

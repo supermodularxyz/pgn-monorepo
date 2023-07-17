@@ -36,6 +36,7 @@ export function TokenAmount({
           type="number"
           step="0.00000001"
           min={0}
+          id="amount"
           size="lg"
           placeholder="0.0"
           className="flex-1"

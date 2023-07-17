@@ -8,9 +8,12 @@ import { PGNConfig } from "../src/types";
 
 import { createPublicClient, createWalletClient, http } from "viem";
 import { hardhat } from "viem/chains";
-import * as chains from "viem/chains";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { ConnectWallet } from "../src/components/ConnectButton";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: false } },
+});
 
 const getMockWalletClient = () =>
   createWalletClient({
@@ -21,38 +24,41 @@ const getMockWalletClient = () =>
     pollingInterval: 100,
   });
 
-const getPublicClient = ({ chainId = hardhat.id }: { chainId?: number }) => {
-  const chain = Object.entries(chains).find(
-    ([_, chain]) => chain.id === chainId
-  )?.[1];
-  if (!chain) throw new Error(`Chain ${chainId} not found`);
-
-  return createPublicClient({
-    transport: http(hardhat.rpcUrls.default.http[0]),
-    chain,
-    pollingInterval: 100,
-  });
-};
-
 const testConnectors = [
   new MockConnector({ options: { walletClient: getMockWalletClient() } }),
 ];
 
-const { chains, publicClient } = configureChains([hardhat], [publicProvider()]);
+const { chains, publicClient } = configureChains(
+  [hardhat],
+  [
+    jsonRpcProvider({
+      rpc: (chain: { id: number }) => {
+        switch (chain.id) {
+          case 31337:
+            return {
+              http: `http://localhost:8545`,
+            };
+          default:
+            throw new Error("Unsupported network.");
+        }
+      },
+    }),
+  ]
+);
 
 const config = createConfig({
   autoConnect: true,
   connectors: testConnectors,
   publicClient,
 });
-export const WagmiMock = ({
-  children,
-  pgnConfig,
-}: { pgnConfig: PGNConfig } & React.PropsWithChildren) => {
+export const WagmiMock = ({ children }: React.PropsWithChildren) => {
   return (
     <QueryClientProvider client={queryClient}>
       <WagmiConfig config={config}>
-        <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
+        <RainbowKitProvider chains={chains}>
+          <ConnectWallet chain={hardhat} />
+          {children}
+        </RainbowKitProvider>
       </WagmiConfig>
     </QueryClientProvider>
   );

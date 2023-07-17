@@ -8,6 +8,10 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [react()],
   test: {
+    coverage: {
+      provider: "istanbul",
+    },
+
     globals: true,
     environment: "jsdom",
     setupFiles: "./test/setup.ts",

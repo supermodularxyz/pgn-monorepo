@@ -30,6 +30,7 @@ export function useCrossChainMessenger({
   const {
     networks: { l1, l2 },
   } = usePGN();
+
   /*
       Needs to handle 3 use-cases:
       - Deposit           L1 => L2 (Signer is L1)
@@ -60,7 +61,6 @@ export function useCrossChainMessenger({
     l1SignerOrProvider = useEthersProvider({ chainId: l1?.id });
     l2SignerOrProvider = useEthersSigner({ chainId: l2?.id });
   }
-
   return useQuery(
     ["crosschain-messenger", { l1AsSigner, readonly }],
     async () =>

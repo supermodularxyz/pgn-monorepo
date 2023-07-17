@@ -20,7 +20,10 @@ export function useDeposit() {
     l1AsSigner: true,
   });
 
+  console.log({ crossChainMessenger });
+
   const deposit = useMutation(async ({ amount, token }: TransferRequest) => {
+    console.log({ crossChainMessenger });
     if (!crossChainMessenger) {
       throw new Error("CrossChainMessenger not initialized");
     }

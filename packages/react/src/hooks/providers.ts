@@ -10,6 +10,7 @@ import {
 
 export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
   const client = useWalletClient({ chainId }).data;
+
   return useMemo(
     () => (client ? walletClientToSigner(client) : undefined),
     [client]
