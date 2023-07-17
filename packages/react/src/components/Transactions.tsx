@@ -4,7 +4,7 @@ import { TokenBridgeMessage } from "@eth-optimism/sdk";
 
 import { ConnectWallet } from "./ConnectButton";
 import { Link } from "./ui/Link";
-import { Button } from "./ui/Button";
+import { SecondaryButton } from "./ui/Button";
 import { Alert, AlertTitle } from "./ui/Alert";
 import { Table, Tbody, Td, Th, Thead, Tr } from "./ui/Table";
 
@@ -23,6 +23,7 @@ import {
 
 import { usePGN } from "..";
 import { Skeleton } from "./ui/Skeleton";
+import { Spinner } from "./Spinner";
 
 export const Transactions = () => {
   const {
@@ -126,6 +127,7 @@ const TransactionRow = memo(
       status?.data as number
     );
     const l1hash = receipt.data?.transactionReceipt.transactionHash;
+
     const statusText =
       withdrawStatusMap[status.data as keyof typeof withdrawStatusMap] ||
       "<unknown>";
@@ -176,26 +178,27 @@ const WithdrawAction = memo(
   ({ hash, status }: { hash: string; status?: number }) => {
     const prove = useProve();
     const finalize = useFinalize();
+
     switch (status) {
       case 3:
         return (
-          <Button
-            color="primary"
+          <SecondaryButton
+            className="w-32"
             onClick={() => prove.mutate(hash)}
             disabled={prove.isLoading}
           >
-            Prove
-          </Button>
+            {prove.isLoading ? "Proving..." : "Prove"}
+          </SecondaryButton>
         );
       case 5:
         return (
-          <Button
-            color="primary"
+          <SecondaryButton
+            className="w-32"
             onClick={() => finalize.mutate(hash)}
             disabled={finalize.isLoading}
           >
-            Finalize
-          </Button>
+            {finalize.isLoading ? "Finalizing..." : "Finalize"}
+          </SecondaryButton>
         );
       default:
         return null;
