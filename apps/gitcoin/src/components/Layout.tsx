@@ -103,7 +103,7 @@ const Navigation = () => {
       </button>
       <NavigationMenu.Root
         className={clsx(
-          "relative z-20 -mx-2 flex-1 justify-center bg-white/30 backdrop-blur md:mx-0 md:flex md:bg-transparent",
+          "relative z-20 -mx-2 flex-1 justify-end bg-white/30 backdrop-blur md:mx-0 md:flex md:bg-transparent",
           {
             ["hidden"]: !isOpen,
           }
