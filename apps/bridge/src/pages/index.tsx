@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Layout } from "../components/Layout";
-import { GettingStarted } from "../components/GetingStarted";
+import { GettingStarted } from "../components/GettingStarted";
 import { BridgeTokens } from "@pgn/react";
 
 export default function Index() {
