@@ -27,7 +27,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
           <AccountButton />
         </div>
       </header>
-      <div className="container mx-auto sm:p-4 md:p-8">{children}</div>
+      <div className="container mx-auto p-2 sm:p-4 md:p-8">{children}</div>
     </main>
   );
 };
