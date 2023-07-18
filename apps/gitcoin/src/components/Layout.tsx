@@ -102,13 +102,16 @@ const Navigation = () => {
         </svg>
       </button>
       <NavigationMenu.Root
-        className={clsx("relative z-20 flex-1 justify-center md:flex", {
-          ["hidden"]: !isOpen,
-        })}
+        className={clsx(
+          "relative z-20 -mx-2 flex-1 justify-center bg-white/30 backdrop-blur md:mx-0 md:flex md:bg-transparent",
+          {
+            ["hidden"]: !isOpen,
+          }
+        )}
       >
         <NavigationMenu.List
           className={clsx(
-            "-mx-2 items-center justify-center gap-4 bg-white/30 p-4 text-right backdrop-blur md:mx-0 md:flex md:gap-8 md:bg-transparent md:p-0  md:p-0"
+            "items-center justify-center gap-4 p-4 text-right backdrop-blur md:mx-0 md:flex md:gap-8 md:p-0  md:p-0"
           )}
         >
           {navItems.map((item, i) => (
@@ -131,8 +134,8 @@ const Navigation = () => {
                     {item.label}
                     <ChevronDown aria-hidden />
                   </NavigationMenu.Trigger>
-                  <NavigationMenu.Content className="h-32">
-                    <div className="left-32 flex flex-col gap-4 rounded-lg bg-white/30 p-2 backdrop-blur md:absolute md:w-32 md:bg-white">
+                  <NavigationMenu.Content>
+                    <div className="left-32 flex flex-col gap-4 rounded-lg  p-2 md:absolute md:w-32 md:bg-white">
                       {item.children?.map((child, j) => (
                         <Link
                           key={j}
@@ -153,8 +156,8 @@ const Navigation = () => {
           ))}
         </NavigationMenu.List>
 
-        <div className="-mx-2 backdrop-blur md:absolute md:left-0 md:top-full md:mx-0 md:flex md:w-full md:justify-center md:bg-transparent">
-          <NavigationMenu.Viewport className="md:relative md:origin-top-left" />
+        <div className="md:absolute md:left-0 md:top-full md:mx-0 md:flex md:w-full md:justify-center">
+          <NavigationMenu.Viewport className=" md:relative md:origin-top-left" />
         </div>
       </NavigationMenu.Root>
     </>
