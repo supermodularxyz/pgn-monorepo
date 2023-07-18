@@ -19,8 +19,8 @@ export const Layout = ({ children }: PropsWithChildren) => {
 
   return (
     <main>
-      <header className="mx-auto flex h-20 flex-wrap items-center justify-between p-2 lg:container">
-        <div className="h-8 pr-8">
+      <header className="mx-auto flex h-20 flex-wrap justify-between p-2 lg:container md:items-center">
+        <div className="mt-1 h-8 pr-8 md:mt-0">
           <Logo />
         </div>
 
@@ -126,7 +126,7 @@ const Navigation = () => {
                 </NavigationMenu.Link>
               ) : (
                 <>
-                  <NavigationMenu.Trigger className="flex items-center gap-2">
+                  <NavigationMenu.Trigger className="flex items-center gap-2 py-4 md:py-0">
                     {item.icon}
                     {item.label}
                     <ChevronDown aria-hidden />
@@ -137,7 +137,7 @@ const Navigation = () => {
                         <Link
                           key={j}
                           className={clsx(
-                            "flex items-center justify-end gap-2 hover:underline"
+                            "flex items-center justify-end gap-2 py-2 hover:underline md:py-0"
                           )}
                           {...child}
                         >
