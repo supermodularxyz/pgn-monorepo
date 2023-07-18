@@ -19,8 +19,8 @@ export const Layout = ({ children }: PropsWithChildren) => {
 
   return (
     <main>
-      <header className="mx-auto flex h-20 flex-wrap justify-between p-2 lg:container md:items-center">
-        <div className="mt-1 h-8 pr-8 md:mt-0">
+      <header className="mx-auto h-16 flex-wrap items-center justify-between bg-white/30 p-2 lg:container md:flex md:h-20 md:items-center md:bg-transparent">
+        <div className="flex h-full w-64 items-center pr-8 md:mt-0 lg:w-auto">
           <Logo />
         </div>
 
@@ -82,7 +82,7 @@ const Navigation = () => {
       <button
         onClick={() => toggleOpen(!isOpen)}
         type="button"
-        className="h-10 w-10 items-center justify-center md:hidden"
+        className="fixed right-3 top-3 h-10 w-10 items-center justify-center md:hidden"
       >
         <span className="sr-only">Open main menu</span>
         <svg
