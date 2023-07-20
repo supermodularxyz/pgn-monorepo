@@ -45,8 +45,7 @@ export function TransferAction({
   }
 
   const balanceOverAmount =
-    amount &&
-    balance?.value > parseEther(String(parseFloat(amount).toFixed(18)));
+    amount && balance?.value >= parseEther(String(parseFloat(amount)));
 
   if (balanceOverAmount) {
     return (
