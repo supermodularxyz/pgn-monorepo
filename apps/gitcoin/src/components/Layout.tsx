@@ -76,7 +76,6 @@ const Navigation = () => {
   const { asPath } = useRouter();
 
   const [isOpen, toggleOpen] = useState(false);
-  console.log({ isOpen });
   return (
     <>
       <button
