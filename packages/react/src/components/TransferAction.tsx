@@ -1,4 +1,4 @@
-import { parseEther } from "viem";
+import { parseEther, parseUnits } from "viem";
 import { Chain, useAccount, useNetwork } from "wagmi";
 import { useFormContext } from "react-hook-form";
 
@@ -6,6 +6,7 @@ import { Button, PrimaryButton } from "./ui/Button";
 import { useTokenBalance } from "../hooks/useTokenBalance";
 import { ErrorMessage } from "./ErrorMessage";
 import { ConnectWallet } from "./ConnectButton";
+import { useSelectedToken } from "../hooks/useSelectedToken";
 
 export function TransferAction({
   action,
@@ -20,7 +21,10 @@ export function TransferAction({
   const { address } = useAccount();
   const network = useNetwork();
 
-  const { data: balance } = useTokenBalance({ chain, token: watch("token") });
+  const token = watch("token");
+  const { decimals = 18 } = useSelectedToken()(token) || {};
+
+  const { data: balance } = useTokenBalance({ chain, token });
   if (!address || network.chain?.unsupported) {
     return (
       <div>
@@ -43,9 +47,9 @@ export function TransferAction({
       </Button>
     );
   }
-
   const balanceOverAmount =
-    amount && balance?.value >= parseEther(String(parseFloat(amount)));
+    amount &&
+    balance?.value >= parseUnits(String(parseFloat(amount)), decimals);
 
   if (balanceOverAmount) {
     return (
