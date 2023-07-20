@@ -6,7 +6,6 @@ import { Button, PrimaryButton } from "./ui/Button";
 import { useTokenBalance } from "../hooks/useTokenBalance";
 import { ErrorMessage } from "./ErrorMessage";
 import { ConnectWallet } from "./ConnectButton";
-import { isTest } from "../providers/Wagmi";
 
 export function TransferAction({
   action,

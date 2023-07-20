@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
 
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 
-export const isTest = process.env.NODE_ENV === "test";
+const isTest = process.env.NODE_ENV === "test";
 
 const testConnectors = [
   new MockConnector({
