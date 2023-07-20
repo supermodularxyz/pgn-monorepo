@@ -42,7 +42,7 @@ export const GettingStarted = () => {
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-300">
               {i + 1}
             </div>
-            <div>{step}</div>
+            <div className="flex-1">{step}</div>
           </li>
         ))}
       </ol>
