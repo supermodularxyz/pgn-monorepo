@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
 
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 
-const isTest = 1 || process.env.NEXT_PUBLIC_PLAYWRIGHT_ENABLED;
+export const isTest = process.env.NODE_ENV === "test";
 
 const testConnectors = [
   new MockConnector({
@@ -61,6 +61,7 @@ export const WagmiProvider = ({
       connectors: isTest ? testConnectors : connectors,
       publicClient,
     });
+
     return { config, chains };
   }, []);
 

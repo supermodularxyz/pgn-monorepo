@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { useAccount, useConnect } from "wagmi";
 import * as chains from "wagmi/chains";
-import { BridgeProvider, tokens } from "../src";
+import { BridgeProvider } from "../src";
 
 const ETH = {
   name: "ETH",
@@ -54,7 +54,7 @@ export type UserEvent = ReturnType<typeof userEvent.setup>;
 export { default as userEvent } from "@testing-library/user-event";
 
 function Connect() {
-  const { address, connector, isConnected } = useAccount();
+  const { connector, isConnected } = useAccount();
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
 

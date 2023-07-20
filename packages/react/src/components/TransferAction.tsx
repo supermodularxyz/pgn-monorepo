@@ -6,6 +6,7 @@ import { Button, PrimaryButton } from "./ui/Button";
 import { useTokenBalance } from "../hooks/useTokenBalance";
 import { ErrorMessage } from "./ErrorMessage";
 import { ConnectWallet } from "./ConnectButton";
+import { isTest } from "../providers/Wagmi";
 
 export function TransferAction({
   action,
@@ -20,10 +21,8 @@ export function TransferAction({
   const { address } = useAccount();
   const network = useNetwork();
 
-  // console.log("network", network.chain, chain);
   const { data: balance } = useTokenBalance({ chain, token: watch("token") });
-  // if (!address || (network.chain?.unsupported && !network.chain.testnet)) {
-  if (!address) {
+  if (!address || (network.chain?.unsupported && !isTest)) {
     return (
       <div>
         {network.chain?.unsupported ? (

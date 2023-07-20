@@ -32,8 +32,7 @@ export const usePGN = () => useContext(Context);
 type BridgeProps = { config: PGNConfig } & React.PropsWithChildren;
 
 export const BridgeProvider = memo(({ config, children }: BridgeProps) => {
-  const state = config;
-  // const state = mergeConfig(config);
+  const state = mergeConfig(config);
 
   useEffect(() => {
     const {
@@ -57,12 +56,11 @@ export const BridgeProvider = memo(({ config, children }: BridgeProps) => {
 });
 
 function mergeConfig(config: PGNConfig) {
-  let merged = merge(config, defaultConfig) as PGNConfig;
-  const { networks } = merged;
-  console.log(JSON.stringify(networks, null, 2));
-  const tokens = merged.tokens.filter(
+  const theme = merge(config.theme || {}, defaultConfig.theme);
+  const tokens = config.tokens.filter(
     (token: Token) =>
-      token.tokens[networks.l1.network] && token.tokens[networks.l2.network]
+      token.tokens[config.networks.l1.network] &&
+      token.tokens[config.networks.l2.network]
   );
-  return { ...merged, tokens };
+  return { ...config, tokens, theme };
 }
