@@ -8,28 +8,25 @@ import {
   screen,
   userEvent,
   waitFor,
-} from "../../test";
-import { BridgeTokens } from "../components/BridgeTokens";
+} from ".";
+import { BridgeTokens } from "../src/components/BridgeTokens";
 
-const { getOptimismConfiguration } = vi.hoisted(() => {
-  return {
-    getOptimismConfiguration: vi.fn().mockResolvedValue({}),
-  };
-});
-const { depositETH } = vi.hoisted(() => {
-  return {
-    depositETH: vi
-      .fn()
-      .mockResolvedValue({ hash: "hash", wait: vi.fn().mockResolvedValue({}) }),
-  };
-});
-const { waitForMessageStatus } = vi.hoisted(() => {
-  return { waitForMessageStatus: vi.fn().mockResolvedValue({}) };
-});
+// Mock Conduit SDK
+const { getOptimismConfiguration } = vi.hoisted(() => ({
+  getOptimismConfiguration: vi.fn().mockResolvedValue({}),
+}));
+vi.mock("@conduitxyz/sdk", () => ({ getOptimismConfiguration }));
 
-vi.mock("@conduitxyz/sdk", () => {
-  return { getOptimismConfiguration };
-});
+// Mock Optimism SDK
+const { depositETH } = vi.hoisted(() => ({
+  depositETH: vi
+    .fn()
+    .mockResolvedValue({ hash: "hash", wait: vi.fn().mockResolvedValue({}) }),
+}));
+const { waitForMessageStatus } = vi.hoisted(() => ({
+  waitForMessageStatus: vi.fn().mockResolvedValue({}),
+}));
+
 vi.mock("@eth-optimism/sdk", () => {
   return {
     MessageStatus: {
@@ -65,12 +62,11 @@ describe("<BridgeTokens />", () => {
       fireEvent.change(amount, { target: { value: "1" } });
     });
 
-    await waitFor(() => expect(amount.value).toBe("1"));
-
     // Wait for balance to be updated before we attempt deposit
     await waitFor(async () => {
       expect(screen.getByText(/10000/)).toBeInTheDocument();
     });
+    await waitFor(() => expect(amount.value).toBe("1"));
 
     const depositButton = screen.getByRole("button", { name: "Deposit" });
     act(() => {

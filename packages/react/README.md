@@ -44,3 +44,19 @@ The component for bridging tokens.
 #### Transactions
 
 This component will fetch all withdrawals and display in a table. The user can Prove or Finalize these transactions.
+
+### Running tests
+
+Make sure a hardhat node is running.
+
+```sh
+cd packages/erc20-deployer
+npx hardhat node
+```
+
+Then you can run the tests
+
+```sh
+npm run test
+
+```
