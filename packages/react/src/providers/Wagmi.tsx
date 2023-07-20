@@ -20,6 +20,7 @@ export const isTest = process.env.NODE_ENV === "test";
 
 const testConnectors = [
   new MockConnector({
+    chains: [hardhat],
     options: {
       walletClient: createWalletClient({
         transport: http(hardhat.rpcUrls.default.http[0]),

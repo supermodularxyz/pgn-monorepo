@@ -22,7 +22,7 @@ export function TransferAction({
   const network = useNetwork();
 
   const { data: balance } = useTokenBalance({ chain, token: watch("token") });
-  if (!address || (network.chain?.unsupported && !isTest)) {
+  if (!address || network.chain?.unsupported) {
     return (
       <div>
         {network.chain?.unsupported ? (
