@@ -1,5 +1,5 @@
 import { parseEther, parseUnits } from "viem";
-import { Chain, useAccount, useNetwork } from "wagmi";
+import { Chain, useAccount, useBalance, useNetwork } from "wagmi";
 import { useFormContext } from "react-hook-form";
 
 import { Button, PrimaryButton } from "./ui/Button";
@@ -23,7 +23,7 @@ export function TransferAction({
 
   const token = watch("token");
   const { decimals = 18 } = useSelectedToken()(token) || {};
-
+  const { data: eth } = useBalance({ address });
   const { data: balance } = useTokenBalance({ chain, token });
   if (!address || network.chain?.unsupported) {
     return (
@@ -53,14 +53,22 @@ export function TransferAction({
 
   if (balanceOverAmount) {
     return (
-      <PrimaryButton
-        className="w-full"
-        color="primary"
-        type="submit"
-        disabled={isLoading}
-      >
-        {isLoading ? "Processing..." : action}
-      </PrimaryButton>
+      <>
+        {eth?.value ? null : (
+          <ErrorMessage
+            className="text-center"
+            error={{ message: `You must have some ETH to transfer funds` }}
+          />
+        )}
+        <PrimaryButton
+          className="w-full"
+          color="primary"
+          type="submit"
+          disabled={isLoading}
+        >
+          {isLoading ? "Processing..." : action}
+        </PrimaryButton>
+      </>
     );
   }
   return (
