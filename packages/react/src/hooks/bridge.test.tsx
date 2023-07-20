@@ -64,7 +64,13 @@ describe("<BridgeTokens />", () => {
     act(() => {
       fireEvent.change(amount, { target: { value: "1" } });
     });
-    await waitFor(async () => new Promise((r) => setTimeout(() => r({}), 500)));
+
+    await waitFor(() => expect(amount.value).toBe("1"));
+
+    // Wait for balance to be updated before we attempt deposit
+    await waitFor(async () => {
+      expect(screen.getByText(/10000/)).toBeInTheDocument();
+    });
 
     const depositButton = screen.getByRole("button", { name: "Deposit" });
     act(() => {
