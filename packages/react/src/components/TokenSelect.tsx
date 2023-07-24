@@ -17,9 +17,9 @@ export function TokenSelect() {
           {...form.register("token")}
         >
           {tokens.map((token) => {
-            const [address] = getToken(token);
+            const [l1Address] = getToken(token);
             return (
-              <option key={token.name} value={address}>
+              <option key={token.name} value={l1Address}>
                 {token.name}
               </option>
             );

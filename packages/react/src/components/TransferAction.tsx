@@ -1,11 +1,12 @@
-import { parseEther } from "viem";
-import { Chain, useAccount, useNetwork } from "wagmi";
+import { parseUnits } from "viem";
+import { Chain, useAccount, useBalance, useNetwork } from "wagmi";
 import { useFormContext } from "react-hook-form";
 
 import { Button, PrimaryButton } from "./ui/Button";
 import { useTokenBalance } from "../hooks/useTokenBalance";
 import { ErrorMessage } from "./ErrorMessage";
 import { ConnectWallet } from "./ConnectButton";
+import { useSelectedToken } from "../hooks/useSelectedToken";
 
 export function TransferAction({
   action,
@@ -20,7 +21,10 @@ export function TransferAction({
   const { address } = useAccount();
   const network = useNetwork();
 
-  const { data: balance } = useTokenBalance({ chain, token: watch("token") });
+  const token = watch("token");
+  const { decimals = 18 } = useSelectedToken()(token) || {};
+  const { data: eth } = useBalance({ address });
+  const { data: balance } = useTokenBalance({ chain, token });
   if (!address || network.chain?.unsupported) {
     return (
       <div>
@@ -43,21 +47,28 @@ export function TransferAction({
       </Button>
     );
   }
-
   const balanceOverAmount =
     amount &&
-    balance?.value > parseEther(String(parseFloat(amount).toFixed(18)));
+    balance?.value >= parseUnits(String(parseFloat(amount)), decimals);
 
   if (balanceOverAmount) {
     return (
-      <PrimaryButton
-        className="w-full"
-        color="primary"
-        type="submit"
-        disabled={isLoading}
-      >
-        {isLoading ? "Processing..." : action}
-      </PrimaryButton>
+      <>
+        {eth?.value ? null : (
+          <ErrorMessage
+            className="text-center"
+            error={{ message: `You must have some ETH to transfer funds` }}
+          />
+        )}
+        <PrimaryButton
+          className="w-full"
+          color="primary"
+          type="submit"
+          disabled={isLoading}
+        >
+          {isLoading ? "Processing..." : action}
+        </PrimaryButton>
+      </>
     );
   }
   return (

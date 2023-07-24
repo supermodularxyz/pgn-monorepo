@@ -1,5 +1,4 @@
 import { Address, Chain, useAccount, useBalance } from "wagmi";
-import { usePGN } from "..";
 
 import { useSelectedToken } from "./useSelectedToken";
 import { useMemo } from "react";
@@ -12,13 +11,13 @@ export function useTokenBalance({
   token: Address;
 }): any {
   const { address } = useAccount();
-  const { networks } = usePGN();
-  const getToken = useSelectedToken(networks.l1.network);
+  const getToken = useSelectedToken();
 
   const tokenAddress = useMemo(
     () => getToken(token)?.tokens[chain.network]?.address,
-    [token]
+    [token, chain]
   );
+
   return useBalance({
     address,
     chainId: chain?.id,

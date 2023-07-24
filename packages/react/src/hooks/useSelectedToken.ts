@@ -1,21 +1,20 @@
-import { useNetwork } from "wagmi";
 import { usePGN } from "..";
 import { Token } from "../types";
 import { useCallback } from "react";
 
-export function useSelectedToken(network?: string) {
-  const { chain } = useNetwork();
+export function useSelectedToken() {
   const { tokens } = usePGN();
 
   return useCallback(
-    (address: string) =>
-      tokens.find((t) => {
-        const networkId = network || (chain?.network as keyof typeof t.tokens);
-        return address === t.tokens[networkId]?.address;
-      }),
-    [tokens, network, chain]
+    (address: string) => getTokenFromL1Address(address, tokens),
+    [tokens]
   );
 }
+
+const getTokenFromL1Address = (l1Address: string, tokens: Token[]) =>
+  tokens.find((t) =>
+    Object.values(t.tokens).find(({ address }) => address === l1Address)
+  );
 
 export function useTokenAddresses() {
   const {
