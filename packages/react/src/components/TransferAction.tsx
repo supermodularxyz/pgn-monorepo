@@ -1,4 +1,4 @@
-import { parseEther, parseUnits } from "viem";
+import { parseUnits } from "viem";
 import { Chain, useAccount, useBalance, useNetwork } from "wagmi";
 import { useFormContext } from "react-hook-form";
 
