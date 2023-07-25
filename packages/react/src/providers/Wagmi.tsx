@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { WagmiConfig, configureChains, createConfig } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -8,25 +8,29 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 import { PGNConfig } from "../types";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: process.env.NODE_ENV === "production",
-      cacheTime: 1000 * 60 * 60 * 24, // 24 hours
-    },
-  },
-});
-
-const persister = createSyncStoragePersister({
-  storage: typeof window !== "undefined" ? window.localStorage : undefined,
-});
-
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 
 export const WagmiProvider = ({
   children,
   pgnConfig,
 }: { pgnConfig: PGNConfig } & React.PropsWithChildren) => {
+  const [{ queryClient, persister }] = useState(() => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          refetchOnWindowFocus: process.env.NODE_ENV === "production",
+          cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+        },
+      },
+    });
+
+    const persister = createSyncStoragePersister({
+      storage: typeof window !== "undefined" ? window.localStorage : undefined,
+    });
+
+    return { queryClient, persister };
+  });
+
   const { config, chains } = useMemo(() => {
     const networks = Object.values(pgnConfig.networks);
     const { chains, publicClient } = configureChains(networks, [
