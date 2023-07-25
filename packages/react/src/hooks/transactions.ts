@@ -2,6 +2,11 @@ import { useAccount } from "wagmi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCrossChainMessenger } from "./crossChainMessenger";
 
+const ONE_MINUTE = 1000 * 60;
+const ONE_HOUR = ONE_MINUTE * 60;
+const ONE_DAY = ONE_HOUR * 24;
+const retryDelay = 1000;
+
 export function useChallengePeriod() {
   const { data: crossChainMessenger } = useCrossChainMessenger({
     readonly: true,
@@ -10,7 +15,7 @@ export function useChallengePeriod() {
     ["challenge-period"],
     async () =>
       crossChainMessenger?.getChallengePeriodSeconds().then((n) => n * 1000),
-    { enabled: Boolean(crossChainMessenger), staleTime: 60 }
+    { enabled: Boolean(crossChainMessenger), staleTime: ONE_DAY }
   );
 }
 
@@ -24,7 +29,11 @@ export function useWithdrawals() {
     ["withdrawals", address],
     async () =>
       crossChainMessenger?.getWithdrawalsByAddress(address as `0x${string}`),
-    { enabled: Boolean(crossChainMessenger && address) }
+    {
+      enabled: Boolean(crossChainMessenger && address),
+      staleTime: ONE_MINUTE * 5,
+      retryDelay,
+    }
   );
 }
 
@@ -38,7 +47,11 @@ export function useWithdrawalReceipt(hash: string, status: number) {
       // Get the message receipt (with L1 hash) only if it exists (status > 4)
       return status > 4 ? crossChainMessenger?.getMessageReceipt(hash) : null;
     },
-    { enabled: Boolean(crossChainMessenger && hash), staleTime: 30 }
+    {
+      enabled: Boolean(crossChainMessenger && hash),
+      staleTime: ONE_MINUTE * 5,
+      retryDelay,
+    }
   );
 }
 
@@ -51,7 +64,11 @@ export function useWithdrawalStatus(hash: string) {
     async () => {
       return crossChainMessenger?.getMessageStatus(hash);
     },
-    { enabled: Boolean(crossChainMessenger), staleTime: 30 }
+    {
+      enabled: Boolean(crossChainMessenger),
+      staleTime: ONE_MINUTE * 5,
+      retryDelay,
+    }
   );
 }
 
@@ -65,7 +82,12 @@ export function useBlock(block: number) {
       crossChainMessenger?.l2Provider
         .getBlock(block)
         .then((tx) => tx.timestamp * 1000),
-    { enabled: Boolean(block && crossChainMessenger), staleTime: Infinity }
+    {
+      enabled: Boolean(block && crossChainMessenger),
+      cacheTime: Infinity,
+      staleTime: Infinity,
+      retryDelay,
+    }
   );
 }
 

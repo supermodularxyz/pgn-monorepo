@@ -1,14 +1,24 @@
 import { useMemo } from "react";
 import { WagmiConfig, configureChains, createConfig } from "wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+
 import { PGNConfig } from "../types";
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { refetchOnWindowFocus: process.env.NODE_ENV === "production" },
+    queries: {
+      refetchOnWindowFocus: process.env.NODE_ENV === "production",
+      cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+    },
   },
+});
+
+const persister = createSyncStoragePersister({
+  storage: typeof window !== "undefined" ? window.localStorage : undefined,
 });
 
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
@@ -47,10 +57,13 @@ export const WagmiProvider = ({
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister }}
+    >
       <WagmiConfig config={config}>
         <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
       </WagmiConfig>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 };
