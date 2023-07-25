@@ -15,7 +15,11 @@ export function useChallengePeriod() {
     ["challenge-period"],
     async () =>
       crossChainMessenger?.getChallengePeriodSeconds().then((n) => n * 1000),
-    { enabled: Boolean(crossChainMessenger), staleTime: ONE_DAY }
+    {
+      enabled: Boolean(crossChainMessenger),
+      staleTime: ONE_DAY,
+      cacheTime: Infinity,
+    }
   );
 }
 
@@ -32,6 +36,7 @@ export function useWithdrawals() {
     {
       enabled: Boolean(crossChainMessenger && address),
       staleTime: ONE_MINUTE * 5,
+      cacheTime: Infinity,
       retryDelay,
     }
   );
@@ -50,6 +55,7 @@ export function useWithdrawalReceipt(hash: string, status: number) {
     {
       enabled: Boolean(crossChainMessenger && hash),
       staleTime: ONE_MINUTE * 5,
+      cacheTime: Infinity,
       retryDelay,
     }
   );
@@ -65,8 +71,9 @@ export function useWithdrawalStatus(hash: string) {
       return crossChainMessenger?.getMessageStatus(hash);
     },
     {
-      enabled: Boolean(crossChainMessenger),
+      enabled: Boolean(crossChainMessenger && hash),
       staleTime: ONE_MINUTE * 5,
+      cacheTime: Infinity,
       retryDelay,
     }
   );
