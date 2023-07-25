@@ -24,7 +24,7 @@ import {
 import { usePGN } from "..";
 import { Skeleton } from "./ui/Skeleton";
 
-export const Transactions = () => {
+export const Transactions = memo(() => {
   const {
     networks: { l1 },
   } = usePGN();
@@ -57,7 +57,7 @@ export const Transactions = () => {
   }
 
   return <TransactionsTable />;
-};
+});
 
 const TransactionsTable = memo(() => {
   const { data, error, isLoading } = useWithdrawals();
