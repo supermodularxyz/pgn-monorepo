@@ -75,6 +75,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
           <div className="flex items-center gap-8 overflow-y-clip overflow-x-scroll py-2 sm:overflow-x-hidden">
             {navItems.map((item) => (
               <Link
+                key={item.href}
                 {...item}
                 className={clsx("hover:underline", {
                   ["underline"]: asPath === item.href,
