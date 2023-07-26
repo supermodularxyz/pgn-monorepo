@@ -167,34 +167,36 @@ const Navigation = () => {
     </>
   );
 };
+const Meta = () => {
+  const site = {
+    title: "Gitcoin | PGN Bridge",
+    description: "Bridge funds to PGN",
+    image: "https://builder.gitcoin.co/assets/gh-background.svg",
+  };
 
-const site = {
-  title: "Gitcoin | PGN Bridge",
-  description: "",
-  image: "https://builder.gitcoin.co/assets/gh-background.svg",
+  return (
+    <>
+      <meta charSet="utf-8" />
+      <title>{site.title}</title>
+      <meta content={site.description} name="description" />
+      <meta content={site.title} property="og:title" />
+      <meta content={site.description} property="og:description" />
+      <meta content={site.image} property="og:image" />
+      <meta content={site.title} property="twitter:title" />
+      <meta content={site.description} property="twitter:description" />
+      <meta content={site.image} property="twitter:image" />
+      <meta property="og:type" content="website" />
+      <meta content="summary_large_image" name="twitter:card" />
+      <meta content="width=device-width, initial-scale=1" name="viewport" />
+      <link
+        href="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a575cc96298081294be33a_PGN%20ICO.png"
+        rel="shortcut icon"
+        type="image/x-icon"
+      />
+      <link
+        href="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a575eedb5908ca4f0f63b1_PGN%20ICO2.png"
+        rel="apple-touch-icon"
+      />
+    </>
+  );
 };
-const Meta = () => (
-  <>
-    <meta charSet="utf-8" />
-    <title>{site.title}</title>
-    <meta content={site.description} name="description" />
-    <meta content={site.title} property="og:title" />
-    <meta content={site.description} property="og:description" />
-    <meta content={site.image} property="og:image" />
-    <meta content={site.title} property="twitter:title" />
-    <meta content={site.description} property="twitter:description" />
-    <meta content={site.image} property="twitter:image" />
-    <meta property="og:type" content="website" />
-    <meta content="summary_large_image" name="twitter:card" />
-    <meta content="width=device-width, initial-scale=1" name="viewport" />
-    <link
-      href="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a575cc96298081294be33a_PGN%20ICO.png"
-      rel="shortcut icon"
-      type="image/x-icon"
-    />
-    <link
-      href="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a575eedb5908ca4f0f63b1_PGN%20ICO2.png"
-      rel="apple-touch-icon"
-    />
-  </>
-);
