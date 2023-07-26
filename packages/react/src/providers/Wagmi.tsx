@@ -73,7 +73,6 @@ export const WagmiProvider = ({
           argentWallet({ projectId, chains }),
           trustWallet({ projectId, chains }),
           ledgerWallet({ projectId, chains }),
-          walletConnectWallet({ projectId, chains }),
         ],
       },
     ]);
