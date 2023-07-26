@@ -2,13 +2,7 @@ import { RenderOptions, render } from "@testing-library/react";
 import { default as userEvent } from "@testing-library/user-event";
 import * as React from "react";
 
-import {
-  useAccount,
-  useConnect,
-  usePublicClient,
-  useTransaction,
-  useWalletClient,
-} from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import * as chains from "wagmi/chains";
 import { BridgeProvider } from "../src";
 
@@ -73,37 +67,11 @@ export { customRender as render };
 export type UserEvent = ReturnType<typeof userEvent.setup>;
 export { default as userEvent } from "@testing-library/user-event";
 
-import TestToken from "./TestToken.json";
-import { parseEther } from "viem";
-import { getTransaction } from "viem";
-
 function Connect() {
-  const { address: account, connector, isConnected } = useAccount();
+  const { connector, isConnected } = useAccount();
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
 
-  const tx = useTransaction();
-  const { data: wallet } = useWalletClient();
-  const client = usePublicClient();
-
-  React.useEffect(() => {
-    if (isConnected && wallet) {
-      const { abi, bytecode } = TestToken;
-      console.log("deploying");
-      // wallet.deployContract({ abi, account, bytecode }).then(async (hash) => {
-      //   console.log("deployed");
-      //   const tx = await client.getTransaction({ hash });
-
-      //   console.log(tx);
-      //   // client.writeContract({
-      //   //   address,
-      //   //   abi,
-      //   //   functionName: "mint",
-      //   //   args: [account, parseEther("10")],
-      //   // });
-      // });
-    }
-  }, [isConnected, client]);
   return (
     <div>
       <div>
@@ -115,7 +83,6 @@ function Connect() {
               key={x.id}
               role="button"
               onClick={() => {
-                console.log("CONNECTING...");
                 connect({ connector: x, chainId: hardhat.id });
               }}
             >

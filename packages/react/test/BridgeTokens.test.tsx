@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
 import {
   UserEvent,
   act,
@@ -18,12 +17,19 @@ const { getOptimismConfiguration } = vi.hoisted(() => ({
 vi.mock("@conduitxyz/sdk", () => ({ getOptimismConfiguration }));
 
 // Mock Optimism SDK
-const { depositETH, depositERC20 } = vi.hoisted(() => {
-  const mock = vi
-    .fn()
-    .mockResolvedValue({ hash: "hash", wait: vi.fn().mockResolvedValue({}) });
-  return { depositERC20: mock, depositETH: mock };
-});
+const { depositETH, withdrawETH, approveERC20, depositERC20, withdrawERC20 } =
+  vi.hoisted(() => {
+    const mock = vi
+      .fn()
+      .mockResolvedValue({ hash: "hash", wait: vi.fn().mockResolvedValue({}) });
+    return {
+      depositETH: mock,
+      withdrawETH: mock,
+      approveERC20: mock,
+      depositERC20: mock,
+      withdrawERC20: mock,
+    };
+  });
 const { waitForMessageStatus } = vi.hoisted(() => ({
   waitForMessageStatus: vi.fn().mockResolvedValue({}),
 }));
@@ -35,8 +41,31 @@ vi.mock("@eth-optimism/sdk", () => {
     },
     CrossChainMessenger: class {
       depositETH = depositETH;
+      withdrawETH = withdrawETH;
+      approveERC20 = approveERC20;
+      depositERC20 = depositERC20;
+      withdrawERC20 = withdrawERC20;
       waitForMessageStatus = waitForMessageStatus;
     },
+  };
+});
+
+// Mock useBalance hook so we don't have to mint tokens for testing
+const { useBalance } = vi.hoisted(() => ({
+  useBalance: vi.fn().mockReturnValue({
+    data: {
+      symbol: "TOK",
+      formatted: "100.00",
+      value: 10 ** 18,
+    },
+  }),
+}));
+
+vi.mock("wagmi", async () => {
+  const actual = await vi.importActual("wagmi");
+  return {
+    ...(actual as any),
+    useBalance,
   };
 });
 
@@ -58,26 +87,24 @@ describe("<BridgeTokens />", () => {
       expect(depositETH).toHaveBeenCalledWith("1000000000000000000", {});
     });
   });
-  it.only("deposits ERC20", async () => {
+
+  it("deposits ERC20", async () => {
     render(<BridgeTokens />);
 
     await connectAndEnterAmount({ user });
 
     const selectToken = screen.getByRole("combobox", { name: "Asset" });
-    const tokenOption = screen.getByRole("option", { name: "TestToken" });
 
     userEvent.selectOptions(selectToken, ["TestToken"]);
-    // fireEvent.change(selectToken, { target: { value: "TestToken" } });
-    // await waitFor(() => {
-    //   expect(tokenOption.selected).toBe(true);
-    // });
-    // const depositButton = screen.getByRole("button", { name: "Deposit" });
-    // act(() => {
-    //   user.click(depositButton);
-    // });
-    // await waitFor(() => {
-    //   expect(depositERC20).toHaveBeenCalledWith("1000000000000000000", {});
-    // });
+    const depositButton = screen.getByRole("button", { name: "Deposit" });
+    act(() => {
+      user.click(depositButton);
+    });
+
+    await waitFor(() => {
+      expect(approveERC20).toHaveBeenCalledWith("1000000000000000000", {});
+      expect(depositERC20).toHaveBeenCalledWith("1000000000000000000", {});
+    });
   });
 });
 
@@ -96,9 +123,5 @@ async function connectAndEnterAmount({ user }: { user: UserEvent }) {
     fireEvent.change(amount, { target: { value: "1" } });
   });
 
-  // Wait for balance to be updated before we attempt deposit
-  // await waitFor(async () => {
-  //   expect(screen.getByText(/10000/)).toBeInTheDocument();
-  // });
   await waitFor(() => expect(amount.value).toBe("1"));
 }
