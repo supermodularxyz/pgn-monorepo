@@ -14,6 +14,7 @@ import {
   argentWallet,
   trustWallet,
   ledgerWallet,
+  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
 import { PGNConfig } from "../types";
@@ -68,10 +69,11 @@ export const WagmiProvider = ({
       {
         groupName: "Other",
         wallets: [
+          safeWallet({ chains }),
           argentWallet({ projectId, chains }),
           trustWallet({ projectId, chains }),
           ledgerWallet({ projectId, chains }),
-          safeWallet({ chains }),
+          walletConnectWallet({ projectId, chains }),
         ],
       },
     ]);
