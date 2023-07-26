@@ -62,5 +62,7 @@ function mergeConfig(config: PGNConfig) {
       token.tokens[config.networks.l1.network] &&
       token.tokens[config.networks.l2.network]
   );
+
+  console.log(config.networks);
   return { ...config, tokens, theme };
 }

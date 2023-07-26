@@ -6,7 +6,7 @@ import { useAccount, useConnect } from "wagmi";
 import * as chains from "wagmi/chains";
 import { BridgeProvider } from "../src";
 
-const testTokens = [
+export const testTokens = [
   {
     name: "ETH",
     symbol: "ETH",
@@ -28,7 +28,7 @@ const testTokens = [
     twitter: "",
     tokens: {
       hardhat: { address: "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f" },
-      l2hardhat: { address: "0x23618e81E3f5cdF7f54C3d65f7FBc0aBf5B21E8f" },
+      l2hardhat: { address: "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266" },
     },
   },
 ];
@@ -36,7 +36,7 @@ const testTokens = [
 const { hardhat } = chains;
 const l2hardhat = {
   ...hardhat,
-  id: 31338,
+  id: hardhat.id + 1,
   name: "L2 Hardhat",
   network: "l2hardhat",
 };
@@ -47,6 +47,11 @@ const pgnConfig = {
     l2: l2hardhat,
   },
 };
+
+export const testTokenAddresses = [
+  testTokens[1].tokens.hardhat.address,
+  testTokens[1].tokens.l2hardhat.address,
+];
 
 export function Providers({ children }: React.PropsWithChildren) {
   return (
