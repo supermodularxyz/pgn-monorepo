@@ -19,6 +19,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
 
   return (
     <main>
+      <Meta />
       <header className="mx-auto h-16 flex-wrap items-center justify-between bg-white/30 p-2 lg:container md:flex md:h-20 md:items-center md:bg-transparent">
         <div className="flex h-full w-64 items-center pr-8 md:mt-0 lg:w-auto">
           <Logo />
@@ -166,3 +167,34 @@ const Navigation = () => {
     </>
   );
 };
+
+const site = {
+  title: "Gitcoin | PGN Bridge",
+  description: "",
+  image: "https://builder.gitcoin.co/assets/gh-background.svg",
+};
+const Meta = () => (
+  <>
+    <meta charSet="utf-8" />
+    <title>{site.title}</title>
+    <meta content={site.description} name="description" />
+    <meta content={site.title} property="og:title" />
+    <meta content={site.description} property="og:description" />
+    <meta content={site.image} property="og:image" />
+    <meta content={site.title} property="twitter:title" />
+    <meta content={site.description} property="twitter:description" />
+    <meta content={site.image} property="twitter:image" />
+    <meta property="og:type" content="website" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <link
+      href="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a575cc96298081294be33a_PGN%20ICO.png"
+      rel="shortcut icon"
+      type="image/x-icon"
+    />
+    <link
+      href="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a575eedb5908ca4f0f63b1_PGN%20ICO2.png"
+      rel="apple-touch-icon"
+    />
+  </>
+);
