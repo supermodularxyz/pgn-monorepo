@@ -19,6 +19,7 @@ export const Layout = ({ children }: PropsWithChildren) => {
 
   return (
     <main>
+      <Meta />
       <header className="mx-auto h-16 flex-wrap items-center justify-between bg-white/30 p-2 lg:container md:flex md:h-20 md:items-center md:bg-transparent">
         <div className="flex h-full w-64 items-center pr-8 md:mt-0 lg:w-auto">
           <Logo />
@@ -56,17 +57,20 @@ const navItems = [
       {
         icon: <ExplorerIcon />,
         label: "Explorer",
-        href: "#",
+        target: "_blank",
+        href: "https://explorer.gitcoin.co",
       },
       {
         icon: <BuilderIcon />,
         label: "Builder",
-        href: "#",
+        target: "_blank",
+        href: "https://builder.gitcoin.co",
       },
       {
         icon: <ManagerIcon />,
         label: "Manager",
-        href: "#",
+        target: "_blank",
+        href: "https://manager.gitcoin.co",
       },
     ],
   },
@@ -134,7 +138,7 @@ const Navigation = () => {
                     <ChevronDown aria-hidden />
                   </NavigationMenu.Trigger>
                   <NavigationMenu.Content>
-                    <div className="left-32 flex flex-col gap-4 rounded-lg  p-2 md:absolute md:w-32 md:bg-white">
+                    <div className="flex flex-col gap-4 rounded-lg p-2 md:absolute md:right-0 md:w-32 md:bg-white">
                       {item.children?.map((child, j) => (
                         <Link
                           key={j}
@@ -155,10 +159,43 @@ const Navigation = () => {
           ))}
         </NavigationMenu.List>
 
-        <div className="md:absolute md:left-0 md:top-full md:mx-0 md:flex md:w-full md:justify-center">
-          <NavigationMenu.Viewport className=" md:relative md:origin-top-left" />
+        <div className="md:absolute md:right-0 md:top-full md:mx-0 md:flex md:w-full md:justify-end md:pr-8 ">
+          <NavigationMenu.Viewport className="md:relative md:origin-top-right" />
         </div>
       </NavigationMenu.Root>
+    </>
+  );
+};
+const Meta = () => {
+  const site = {
+    title: "Gitcoin | PGN Bridge",
+    description: "Bridge funds to PGN",
+    image: "https://builder.gitcoin.co/assets/gh-background.svg",
+  };
+
+  return (
+    <>
+      <meta charSet="utf-8" />
+      <title>{site.title}</title>
+      <meta content={site.description} name="description" />
+      <meta content={site.title} property="og:title" />
+      <meta content={site.description} property="og:description" />
+      <meta content={site.image} property="og:image" />
+      <meta content={site.title} property="twitter:title" />
+      <meta content={site.description} property="twitter:description" />
+      <meta content={site.image} property="twitter:image" />
+      <meta property="og:type" content="website" />
+      <meta content="summary_large_image" name="twitter:card" />
+      <meta content="width=device-width, initial-scale=1" name="viewport" />
+      <link
+        href="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a575cc96298081294be33a_PGN%20ICO.png"
+        rel="shortcut icon"
+        type="image/x-icon"
+      />
+      <link
+        href="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a575eedb5908ca4f0f63b1_PGN%20ICO2.png"
+        rel="apple-touch-icon"
+      />
     </>
   );
 };

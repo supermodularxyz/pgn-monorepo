@@ -1,18 +1,25 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { WagmiConfig, configureChains, createConfig } from "wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import { QueryClient } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
+import {
+  RainbowKitProvider,
+  connectorsForWallets,
+  getDefaultWallets,
+} from "@rainbow-me/rainbowkit";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { PGNConfig } from "../types";
 import { MockConnector } from "wagmi/connectors/mock";
 import { createWalletClient, http } from "viem";
 import { hardhat } from "wagmi/chains";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { refetchOnWindowFocus: process.env.NODE_ENV === "production" },
-  },
-});
+import {
+  safeWallet,
+  argentWallet,
+  trustWallet,
+  ledgerWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 
@@ -36,6 +43,23 @@ export const WagmiProvider = ({
   children,
   pgnConfig,
 }: { pgnConfig: PGNConfig } & React.PropsWithChildren) => {
+  const [{ queryClient, persister }] = useState(() => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: {
+          refetchOnWindowFocus: process.env.NODE_ENV === "production",
+          cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+        },
+      },
+    });
+
+    const persister = createSyncStoragePersister({
+      storage: typeof window !== "undefined" ? window.localStorage : undefined,
+    });
+
+    return { queryClient, persister };
+  });
+
   const { config, chains } = useMemo(() => {
     const networks = Object.values(pgnConfig.networks);
     const { chains, publicClient } = configureChains(networks, [
@@ -51,11 +75,25 @@ export const WagmiProvider = ({
       }),
     ]);
 
-    const { connectors } = getDefaultWallets({
+    const projectId = "4e43a05dd632c288318350b90b950400";
+    const { wallets } = getDefaultWallets({
       appName: "PGN Bridge",
-      projectId: "4e43a05dd632c288318350b90b950400",
+      projectId,
       chains,
     });
+
+    const connectors = connectorsForWallets([
+      ...wallets,
+      {
+        groupName: "Other",
+        wallets: [
+          safeWallet({ chains }),
+          argentWallet({ projectId, chains }),
+          trustWallet({ projectId, chains }),
+          ledgerWallet({ projectId, chains }),
+        ],
+      },
+    ]);
 
     const config = createConfig({
       autoConnect: true,
@@ -67,10 +105,13 @@ export const WagmiProvider = ({
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister }}
+    >
       <WagmiConfig config={config}>
         <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
       </WagmiConfig>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 };

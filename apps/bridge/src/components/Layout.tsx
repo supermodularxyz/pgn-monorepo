@@ -32,27 +32,66 @@ const navItems = [
 export const Layout = ({ children }: PropsWithChildren) => {
   const { asPath } = useRouter();
   return (
-    <main>
-      <header className="container mx-auto h-20 items-center justify-between p-2 md:flex">
-        <Logo />
-        <div className="flex items-center gap-8 overflow-y-clip overflow-x-scroll py-2 sm:overflow-x-hidden">
-          {navItems.map((item) => (
-            <Link
-              {...item}
-              className={clsx("hover:underline", {
-                ["underline"]: asPath === item.href,
-              })}
-            >
-              {item.label}
-            </Link>
-          ))}
-          <div className="fixed right-2 top-2 md:static">
-            <AccountButton />
+    <>
+      <meta charSet="utf-8" />
+      <title>Public Goods Network - Bridge</title>
+      <meta
+        content="PGN is both a digital schelling point and the world's first L2 that works to create durable and recurring funding for public goods."
+        name="description"
+      />
+      <meta content="Public Goods Network - Bridge" property="og:title" />
+      <meta
+        content="PGN is both a digital schelling point and the world's first L2 that works to create durable and recurring funding for public goods."
+        property="og:description"
+      />
+      <meta
+        content="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a579cce0dd563bb5f26680_PGNgreen.png"
+        property="og:image"
+      />
+      <meta content="Public Goods Network - Bridge" property="twitter:title" />
+      <meta
+        content="PGN is both a digital schelling point and the world's first L2 that works to create durable and recurring funding for public goods."
+        property="twitter:description"
+      />
+      <meta
+        content="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a579cce0dd563bb5f26680_PGNgreen.png"
+        property="twitter:image"
+      />
+      <meta property="og:type" content="website" />
+      <meta content="summary_large_image" name="twitter:card" />
+      <meta content="width=device-width, initial-scale=1" name="viewport" />
+      <link
+        href="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a575cc96298081294be33a_PGN%20ICO.png"
+        rel="shortcut icon"
+        type="image/x-icon"
+      />
+      <link
+        href="https://uploads-ssl.webflow.com/647f92a0f2ef1e7c88494a60/64a575eedb5908ca4f0f63b1_PGN%20ICO2.png"
+        rel="apple-touch-icon"
+      />
+      <main>
+        <header className="container mx-auto h-20 items-center justify-between p-2 md:flex">
+          <Logo />
+          <div className="flex items-center gap-8 overflow-y-clip overflow-x-scroll py-2 sm:overflow-x-hidden">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                {...item}
+                className={clsx("hover:underline", {
+                  ["underline"]: asPath === item.href,
+                })}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <div className="fixed right-2 top-2 md:static">
+              <AccountButton />
+            </div>
           </div>
-        </div>
-      </header>
-      <div className="container mx-auto p-2 sm:p-4 md:p-8">{children}</div>
-    </main>
+        </header>
+        <div className="container mx-auto p-2 sm:p-4 md:p-8">{children}</div>
+      </main>
+    </>
   );
 };
 
