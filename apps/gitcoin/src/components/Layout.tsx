@@ -56,17 +56,20 @@ const navItems = [
       {
         icon: <ExplorerIcon />,
         label: "Explorer",
-        href: "#",
+        target: "_blank",
+        href: "https://explorer.gitcoin.co",
       },
       {
         icon: <BuilderIcon />,
         label: "Builder",
-        href: "#",
+        target: "_blank",
+        href: "https://builder.gitcoin.co",
       },
       {
         icon: <ManagerIcon />,
         label: "Manager",
-        href: "#",
+        target: "_blank",
+        href: "https://manager.gitcoin.co",
       },
     ],
   },
@@ -135,7 +138,7 @@ const Navigation = () => {
                     <ChevronDown aria-hidden />
                   </NavigationMenu.Trigger>
                   <NavigationMenu.Content>
-                    <div className="left-32 flex flex-col gap-4 rounded-lg  p-2 md:absolute md:w-32 md:bg-white">
+                    <div className="flex flex-col gap-4 rounded-lg p-2 md:absolute md:right-0 md:w-32 md:bg-white">
                       {item.children?.map((child, j) => (
                         <Link
                           key={j}
@@ -156,8 +159,8 @@ const Navigation = () => {
           ))}
         </NavigationMenu.List>
 
-        <div className="md:absolute md:left-0 md:top-full md:mx-0 md:flex md:w-full md:justify-center">
-          <NavigationMenu.Viewport className=" md:relative md:origin-top-left" />
+        <div className="md:absolute md:right-0 md:top-full md:mx-0 md:flex md:w-full md:justify-end md:pr-8 ">
+          <NavigationMenu.Viewport className="md:relative md:origin-top-right" />
         </div>
       </NavigationMenu.Root>
     </>
