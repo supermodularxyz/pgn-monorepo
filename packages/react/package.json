@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@conduitxyz/sdk": "^0.0.3",
-    "@eth-optimism/sdk": "^3.0.0",
+    "@eth-optimism/sdk": "^3.1.0",
     "@ethersproject/providers": "^5.7.2",
     "@hookform/resolvers": "^3.1.1",
     "@rainbow-me/rainbowkit": "^1.0.6",
