@@ -3,8 +3,18 @@ import { WagmiConfig, configureChains, createConfig } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
-import { RainbowKitProvider, getDefaultWallets } from "@rainbow-me/rainbowkit";
+import {
+  RainbowKitProvider,
+  connectorsForWallets,
+  getDefaultWallets,
+} from "@rainbow-me/rainbowkit";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import {
+  safeWallet,
+  argentWallet,
+  trustWallet,
+  ledgerWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 
 import { PGNConfig } from "../types";
 
@@ -46,11 +56,25 @@ export const WagmiProvider = ({
       }),
     ]);
 
-    const { connectors } = getDefaultWallets({
+    const projectId = "4e43a05dd632c288318350b90b950400";
+    const { wallets } = getDefaultWallets({
       appName: "PGN Bridge",
-      projectId: "4e43a05dd632c288318350b90b950400",
+      projectId,
       chains,
     });
+
+    const connectors = connectorsForWallets([
+      ...wallets,
+      {
+        groupName: "Other",
+        wallets: [
+          argentWallet({ projectId, chains }),
+          trustWallet({ projectId, chains }),
+          ledgerWallet({ projectId, chains }),
+          safeWallet({ chains }),
+        ],
+      },
+    ]);
 
     const config = createConfig({
       autoConnect: true,
