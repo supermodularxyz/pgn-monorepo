@@ -17,7 +17,7 @@ if (!(l1 && l2)) {
 const config = {
   theme,
   // Tokens to be shown in the UI
-  tokens: [tokens.ETH, tokens.TestToken],
+  tokens: [tokens.ETH],
   // Configs with RPC url and chain IDs
   networks: { l1, l2 },
 };
