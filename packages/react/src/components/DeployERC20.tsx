@@ -34,9 +34,9 @@ export const DeployERC20 = memo(() => {
       schema={TokenSchema}
       onSubmit={({ address, name, symbol }, form) => {
         console.log("depoy", address, name, symbol);
-        deploy.write?.({
-          args: [address, name, symbol],
-        });
+        // deploy.write?.({
+        //   args: [address, name, symbol],
+        // });
       }}
     >
       <Card>
@@ -62,16 +62,21 @@ const TokenInput = ({ isLoading = false }) => {
 
   const address = form.watch("address");
 
+  console.log("address", address);
   const token = useToken({
     address,
     enabled: Boolean(isAddress(address)), // Only fetch token if valid address
     chainId: networks.l1.id,
+    // staleTime: 0,
+    // cacheTime: 0,
   });
+
+  console.log(token.data);
 
   useEffect(() => {
     // Update form so we can use these values in the submit handler
-    if (token.data && !form.watch("symbol")) {
-      const { name, symbol } = token.data;
+    const { name, symbol } = token.data || {};
+    if (token.data && symbol !== form.watch("symbol")) {
       form.setValue("name", name);
       form.setValue("symbol", symbol);
     }
@@ -101,7 +106,10 @@ const TokenInput = ({ isLoading = false }) => {
         <Select
           placeholder="Select a token"
           disabled={form.formState.isSubmitting}
-          onChange={(e: any) => form.setValue("address", e.target.value)}
+          onChange={(e: any) => {
+            form.setValue("address", e.target.value);
+            token.refetch();
+          }}
         >
           <option value="">Select token</option>
           {Object.values(TOKEN_LIST)
