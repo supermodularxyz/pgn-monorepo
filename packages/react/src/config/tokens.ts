@@ -32,3 +32,17 @@ export const TestToken = {
     },
   },
 };
+
+export const ChainLink = {
+  name: "ChainLink",
+  symbol: "LINK",
+  decimals: 18,
+  tokens: {
+    sepolia: {
+      address: "0x779877A7B0D9E8603169DdbD7836e478b4624789",
+    },
+    pgnTestnet: {
+      address: "0x3390108E913824B8eaD638444cc52B9aBdF63798",
+    },
+  },
+};
