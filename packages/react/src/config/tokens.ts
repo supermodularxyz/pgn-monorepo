@@ -39,6 +39,9 @@ export const GTC = {
     mainnet: {
       address: "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
     },
+    homestead: {
+      address: "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
+    },
     pgnTestnet: {
       address: "",
     },
