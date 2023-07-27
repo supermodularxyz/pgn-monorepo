@@ -18,6 +18,7 @@ import {
 } from "wagmi";
 import { Button, PrimaryButton } from "./ui/Button";
 import { ConnectWallet } from "./ConnectButton";
+import * as tokens from "../config/tokens";
 
 export const TokenSchema = z.object({
   address: z.string(),
@@ -54,6 +55,7 @@ export const DeployERC20 = memo(() => {
   );
 });
 
+const { ETH, ...TOKEN_LIST } = tokens;
 const TokenInput = ({ isLoading = false }) => {
   const { networks } = usePGN();
   const form = useFormContext();
@@ -82,25 +84,6 @@ const TokenInput = ({ isLoading = false }) => {
     }
   }, [address]);
 
-  const tokens = [
-    {
-      symbol: "DAI",
-      l1address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    },
-    {
-      symbol: "GTC",
-      l1address: "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
-    },
-    {
-      symbol: "USDC",
-      l1address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    },
-    {
-      symbol: "USDT",
-      l1address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    },
-  ];
-
   return (
     <div className="space-y-4">
       <div>
@@ -121,13 +104,28 @@ const TokenInput = ({ isLoading = false }) => {
           onChange={(e: any) => form.setValue("address", e.target.value)}
         >
           <option value="">Select token</option>
-          {tokens.map((token) => {
-            return (
-              <option key={token.symbol} value={token.l1address}>
-                {token.symbol}
-              </option>
-            );
-          })}
+          {Object.values(TOKEN_LIST)
+            .filter(
+              (token) =>
+                !token.tokens[networks.l2.network as keyof typeof token.tokens]
+                  ?.address
+            )
+            .map((token) => {
+              const chain =
+                networks.l1.network === "homestead"
+                  ? "mainnet"
+                  : networks.l1.network;
+              return (
+                <option
+                  key={token.symbol}
+                  value={
+                    token.tokens[chain as keyof typeof token.tokens]?.address
+                  }
+                >
+                  {token.symbol}
+                </option>
+              );
+            })}
         </Select>
       </div>
       <ErrorMessage
