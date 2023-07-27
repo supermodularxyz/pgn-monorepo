@@ -43,7 +43,7 @@ export const GTC = {
       address: "",
     },
     pgn: {
-      address: "",
+      address: "0x7c6b91D9Be155A6Db01f749217d76fF02A7227F2",
     },
   },
 };
