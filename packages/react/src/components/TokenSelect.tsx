@@ -10,22 +10,21 @@ export function TokenSelect() {
   const getToken = useTokenAddresses();
   return (
     <div>
-      <Label>
-        Asset
-        <Select
-          disabled={form.formState.isSubmitting}
-          {...form.register("token")}
-        >
-          {tokens.map((token) => {
-            const [l1Address] = getToken(token);
-            return (
-              <option key={token.name} value={l1Address}>
-                {token.name}
-              </option>
-            );
-          })}
-        </Select>
-      </Label>
+      <Label htmlFor="token">Asset</Label>
+      <Select
+        id="token"
+        disabled={form.formState.isSubmitting}
+        {...form.register("token")}
+      >
+        {tokens.map((token) => {
+          const [l1Address] = getToken(token);
+          return (
+            <option key={token.name} value={l1Address}>
+              {token.name}
+            </option>
+          );
+        })}
+      </Select>
     </div>
   );
 }
