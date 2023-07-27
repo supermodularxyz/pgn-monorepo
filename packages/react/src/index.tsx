@@ -8,7 +8,7 @@ export * as networks from "./config/networks";
 
 export * from "./components/AccountButton";
 export * from "./components/BridgeTokens";
-export * from "./components/BridgeERC20";
+export * from "./components/DeployERC20";
 export * from "./components/Transactions";
 export * from "./providers/Wagmi";
 export * from "./hooks/switchNetwork";

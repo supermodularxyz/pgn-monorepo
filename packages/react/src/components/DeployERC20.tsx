@@ -1,11 +1,11 @@
 import { z } from "zod";
 
-import { Form, Input } from "./ui/Form";
+import { Form, Input, Select } from "./ui/Form";
 import { TransferLog } from "./TransferLog";
 import { ErrorMessage } from "./ErrorMessage";
 import { Card } from "./ui/Card";
-import { memo, useEffect, useMemo, useState } from "react";
-import { isAddress, parseAbiItem } from "viem";
+import { ChangeEvent, memo, useEffect, useState } from "react";
+import { isAddress } from "viem";
 import { Label } from "./ui/Form";
 import { useFormContext } from "react-hook-form";
 import { usePGN } from "..";
@@ -25,7 +25,7 @@ export const TokenSchema = z.object({
   symbol: z.string(),
 });
 
-export const BridgeERC20 = memo(() => {
+export const DeployERC20 = memo(() => {
   const { log, ...deploy } = useDeployERC20();
 
   return (
@@ -82,32 +82,53 @@ const TokenInput = ({ isLoading = false }) => {
     }
   }, [address]);
 
+  const tokens = [
+    {
+      symbol: "DAI",
+      l1address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    },
+    {
+      symbol: "GTC",
+      l1address: "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
+    },
+    {
+      symbol: "USDC",
+      l1address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    },
+    {
+      symbol: "USDT",
+      l1address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    },
+  ];
+
   return (
     <div className="space-y-4">
       <div>
         <div className="flex justify-between items-center">
           <Label htmlFor="address">L1 address</Label>
-          <button
-            disabled={isLoading}
-            className="text-xs text-black/60 p-1"
-            type="button"
-            onClick={() =>
-              form.setValue(
-                "address",
-                "0x779877A7B0D9E8603169DdbD7836e478b4624789"
-              )
-            }
-          >
-            Add ChainLink (Sepolia)
-          </button>
         </div>
-        <div className="">
+
+        <div className="mb-1">
           <Input
             disabled={isLoading}
             placeholder="0x..."
             {...form.register("address")}
           />
         </div>
+        <Select
+          placeholder="Select a token"
+          disabled={form.formState.isSubmitting}
+          onChange={(e: any) => form.setValue("address", e.target.value)}
+        >
+          <option value="">Select token</option>
+          {tokens.map((token) => {
+            return (
+              <option key={token.symbol} value={token.l1address}>
+                {token.symbol}
+              </option>
+            );
+          })}
+        </Select>
       </div>
       <ErrorMessage
         className="font-mono"
