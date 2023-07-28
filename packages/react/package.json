@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@conduitxyz/sdk": "^0.0.3",
+    "@eth-optimism/contracts-bedrock": "^0.15.0",
     "@eth-optimism/sdk": "^3.1.0",
     "@ethersproject/providers": "^5.7.2",
     "@hookform/resolvers": "^3.1.1",
