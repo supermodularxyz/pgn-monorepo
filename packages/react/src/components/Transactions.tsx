@@ -61,6 +61,7 @@ export const Transactions = memo(() => {
 
 const TransactionsTable = memo(() => {
   const { data, error, isLoading } = useWithdrawals();
+  console.log(data);
   const { data: challengePeriod } = useChallengePeriod();
   return (
     <Table>
@@ -84,13 +85,15 @@ const TransactionsTable = memo(() => {
             ))}
           </Tr>
         ) : data?.length ? (
-          data.map((tx) => (
-            <TransactionRow
-              key={tx.transactionHash}
-              challengePeriod={challengePeriod}
-              {...tx}
-            />
-          ))
+          data
+            .slice(0, 2)
+            .map((tx) => (
+              <TransactionRow
+                key={tx.transactionHash}
+                challengePeriod={challengePeriod}
+                {...tx}
+              />
+            ))
         ) : (
           <Tr>
             <Td colSpan={6} className="text-center">
@@ -175,32 +178,41 @@ const TransactionRow = memo(
 
 const WithdrawAction = memo(
   ({ hash, status }: { hash: string; status?: number }) => {
-    const prove = useProve();
     const finalize = useFinalize();
 
     switch (status) {
       case 3:
-        return (
-          <SecondaryButton
-            className="w-32"
-            onClick={() => prove.mutate(hash)}
-            disabled={prove.isLoading}
-          >
-            {prove.isLoading ? "Proving..." : "Prove"}
-          </SecondaryButton>
-        );
+        return <ProveButton hash={hash} />;
       case 5:
-        return (
-          <SecondaryButton
-            className="w-32"
-            onClick={() => finalize.mutate(hash)}
-            disabled={finalize.isLoading}
-          >
-            {finalize.isLoading ? "Finalizing..." : "Finalize"}
-          </SecondaryButton>
-        );
+        return <FinalizeButton hash={hash} />;
       default:
         return null;
     }
   }
 );
+
+const ProveButton = memo(({ hash }: { hash: string }) => {
+  const prove = useProve();
+  return (
+    <SecondaryButton
+      className="w-32"
+      onClick={() => prove.mutate(hash)}
+      disabled={prove.isLoading}
+    >
+      {prove.isLoading ? "Proving..." : "Prove"}
+    </SecondaryButton>
+  );
+});
+
+const FinalizeButton = memo(({ hash }: { hash: string }) => {
+  const finalize = useFinalize();
+  return (
+    <SecondaryButton
+      className="w-32"
+      onClick={() => finalize.mutate(hash)}
+      disabled={finalize.isLoading}
+    >
+      {finalize.isLoading ? "Finalizing..." : "Finalize"}
+    </SecondaryButton>
+  );
+});

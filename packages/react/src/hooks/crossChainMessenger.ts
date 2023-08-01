@@ -4,10 +4,11 @@ import { getOptimismConfiguration } from "@conduitxyz/sdk";
 import { useQuery } from "@tanstack/react-query";
 import { Signer } from "ethers";
 import { Provider } from "@ethersproject/providers";
+import { useProvider, useSigner } from "wagmi";
 
 import { usePGN } from "..";
 import { getConduitSlug } from "../config";
-import { useEthersProvider, useEthersSigner } from "./providers";
+// import { useEthersProvider, useEthersSigner } from "./providers";
 
 function createCrossChainMessenger(
   { l1SignerOrProvider, l2SignerOrProvider }: any,
@@ -46,28 +47,30 @@ export function useCrossChainMessenger({
   let l1SignerOrProvider: Provider | Signer | null | undefined;
   let l2SignerOrProvider: Provider | Signer | null | undefined;
 
+  // Query transactions
   if (readonly) {
-    l1SignerOrProvider = useEthersProvider({ chainId: l1?.id });
-    l2SignerOrProvider = useEthersProvider({ chainId: l2?.id });
+    l1SignerOrProvider = useProvider({ chainId: l1?.id });
+    l2SignerOrProvider = useProvider({ chainId: l2?.id });
   }
-  // Deposit, Prove, Finalize (L1 => L2)
+  // Deposit, Prove, Finalize
   else if (l1AsSigner) {
-    l1SignerOrProvider = useEthersSigner({ chainId: l1?.id });
-    l2SignerOrProvider = useEthersProvider({ chainId: l2?.id });
+    l1SignerOrProvider = useSigner({ chainId: l1?.id }).data;
+    l2SignerOrProvider = useProvider({ chainId: l2?.id });
   }
-  // Withdraw                 (L2 => L1)
+  // Withdraw
   else {
-    l1SignerOrProvider = useEthersProvider({ chainId: l1?.id });
-    l2SignerOrProvider = useEthersSigner({ chainId: l2?.id });
+    l1SignerOrProvider = useProvider({ chainId: l1?.id });
+    l2SignerOrProvider = useSigner({ chainId: l2?.id }).data;
   }
 
   return useQuery(
-    ["crosschain-messenger", { l1AsSigner, readonly }],
-    async () =>
-      createCrossChainMessenger(
+    ["crosschain-messenger", { l1AsSigner, readonly, l1, l2 }],
+    async () => {
+      return createCrossChainMessenger(
         { l1SignerOrProvider, l2SignerOrProvider },
         getConduitSlug(l2.network as any)
-      ),
+      );
+    },
     { enabled: Boolean(l1SignerOrProvider && l2SignerOrProvider) }
   );
 }
