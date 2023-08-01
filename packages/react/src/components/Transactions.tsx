@@ -85,15 +85,13 @@ const TransactionsTable = memo(() => {
             ))}
           </Tr>
         ) : data?.length ? (
-          data
-            .slice(0, 2)
-            .map((tx) => (
-              <TransactionRow
-                key={tx.transactionHash}
-                challengePeriod={challengePeriod}
-                {...tx}
-              />
-            ))
+          data.map((tx) => (
+            <TransactionRow
+              key={tx.transactionHash}
+              challengePeriod={challengePeriod}
+              {...tx}
+            />
+          ))
         ) : (
           <Tr>
             <Td colSpan={6} className="text-center">
