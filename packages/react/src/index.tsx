@@ -1,5 +1,5 @@
 import "./styles.css";
-import { createContext, memo, useContext, useEffect } from "react";
+import { createContext, memo, useContext, useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 
 export * as chains from "./config/chain";
@@ -18,6 +18,19 @@ import { merge } from "./utils/merge";
 import { WagmiProvider } from "./providers/Wagmi";
 import { theme } from "./theme";
 
+import * as Sentry from "@sentry/react";
+
+Sentry.init({
+  environment: process.env.NEXT_PUBLIC_SENRTY_ENVIRONMENT,
+  dsn: "https://6963513d4f086ed223d419d151eb653b@o4505635739598848.ingest.sentry.io/4505635765944320",
+  integrations: [
+    new Sentry.BrowserTracing({
+      // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+      tracePropagationTargets: ["localhost", "https:yourserver.io/api/"],
+    }),
+  ],
+});
+
 const defaultConfig = {
   tokens: [],
   theme: theme,
@@ -34,19 +47,12 @@ type BridgeProps = { config: PGNConfig } & React.PropsWithChildren;
 
 export const BridgeProvider = memo(({ config, children }: BridgeProps) => {
   const state = mergeConfig(config);
-
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-    const {
-      networks: { l1, l2 },
-    } = state;
-    const validTokens = state.tokens.every(
-      (token: Token) => token.tokens[l1.network] && token.tokens[l2.network]
-    );
+    setLoaded(true);
+  }, []);
 
-    if (!validTokens) {
-      throw new Error("Tokens must have addresses for both L1 and L2 networks");
-    }
-  }, [state]);
+  if (!loaded) return null;
 
   return (
     <WagmiProvider pgnConfig={state}>
