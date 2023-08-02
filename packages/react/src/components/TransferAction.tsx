@@ -1,4 +1,3 @@
-import { parseUnits } from "viem";
 import { Chain, useAccount, useBalance, useNetwork } from "wagmi";
 import { useFormContext } from "react-hook-form";
 
@@ -7,6 +6,7 @@ import { useTokenBalance } from "../hooks/useTokenBalance";
 import { ErrorMessage } from "./ErrorMessage";
 import { ConnectWallet } from "./ConnectButton";
 import { useSelectedToken } from "../hooks/useSelectedToken";
+import { parseUnits } from "ethers/lib/utils.js";
 
 export function TransferAction({
   action,
