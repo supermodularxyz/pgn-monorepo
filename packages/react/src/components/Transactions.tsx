@@ -1,7 +1,8 @@
 import { PropsWithChildren, memo } from "react";
 import { useAccount, useNetwork } from "wagmi";
+import { useQueryClient } from "@tanstack/react-query";
 import { TokenBridgeMessage } from "@eth-optimism/sdk";
-
+import toast from "react-hot-toast";
 import { ConnectWallet } from "./ConnectButton";
 import { Link } from "./ui/Link";
 import { SecondaryButton } from "./ui/Button";
@@ -23,6 +24,7 @@ import {
 
 import { usePGN } from "..";
 import { Skeleton } from "./ui/Skeleton";
+import { parseEthersError } from "../utils/revertReason";
 
 export const Transactions = memo(() => {
   const {
@@ -110,92 +112,103 @@ const withdrawStatusMap = {
   5: "Ready to relay",
   6: "Relayed",
 };
-const TransactionRow = memo(
-  ({
-    transactionHash,
-    blockNumber,
-    challengePeriod = 0,
-  }: TokenBridgeMessage & { challengePeriod?: number }) => {
-    const { data: timestamp = 0 } = useBlock(blockNumber);
-    const {
-      networks: { l1, l2 },
-    } = usePGN();
-    const status = useWithdrawalStatus(transactionHash);
-    const receipt = useWithdrawalReceipt(
-      transactionHash,
-      status?.data as number
-    );
-    const l1hash = receipt.data?.transactionReceipt.transactionHash;
+const TransactionRow = ({
+  transactionHash,
+  blockNumber,
+  challengePeriod = 0,
+}: TokenBridgeMessage & { challengePeriod?: number }) => {
+  const { data: timestamp = 0 } = useBlock(blockNumber);
+  const {
+    networks: { l1, l2 },
+  } = usePGN();
+  const status = useWithdrawalStatus(transactionHash);
+  const receipt = useWithdrawalReceipt(transactionHash, status?.data as number);
+  const l1hash = receipt.data?.transactionReceipt.transactionHash;
 
-    const statusText =
-      withdrawStatusMap[status.data as keyof typeof withdrawStatusMap] ||
-      "<unknown>";
+  const statusText =
+    withdrawStatusMap[status.data as keyof typeof withdrawStatusMap] ||
+    "<unknown>";
 
-    const timeLeft = timestamp ? timeAgo(timestamp + challengePeriod) : null;
-    return (
-      <Tr>
-        <Td>
-          <Link
-            className="font-mono"
-            target="_blank"
-            title={transactionHash}
-            href={`${l2.blockExplorers?.default.url}/tx/${transactionHash}`}
-          >
-            {truncate(transactionHash)}
-          </Link>
-        </Td>
-        <Td>
-          <Skeleton isLoading={status.isLoading}>{statusText}</Skeleton>
-        </Td>
-        <Td>{timestamp ? <>{timeAgo(timestamp)}</> : null}</Td>
-        <Td>
-          <Skeleton isLoading={receipt.isLoading}>
-            {l1hash ? (
-              <Link
-                className="font-mono"
-                target="_blank"
-                title={l1hash}
-                href={`${l1.blockExplorers?.default.url}/tx/${l1hash}`}
-              >
-                {truncate(l1hash)}
-              </Link>
-            ) : (
-              "N/A"
-            )}
-          </Skeleton>
-        </Td>
-        <Td>{timeLeft}</Td>
-        <Td>
-          {status.data === 4 ? <ProveButton hash={transactionHash} /> : null}
-          {status.data === 6 ? <FinalizeButton hash={transactionHash} /> : null}
-        </Td>
-      </Tr>
-    );
-  }
-);
+  const timeLeft = timestamp ? timeAgo(timestamp + challengePeriod) : null;
+  return (
+    <Tr>
+      <Td>
+        <Link
+          className="font-mono"
+          target="_blank"
+          title={transactionHash}
+          href={`${l2.blockExplorers?.default.url}/tx/${transactionHash}`}
+        >
+          {truncate(transactionHash)}
+        </Link>
+      </Td>
+      <Td>
+        <Skeleton isLoading={status.isLoading}>{statusText}</Skeleton>
+      </Td>
+      <Td>{timestamp ? <>{timeAgo(timestamp)}</> : null}</Td>
+      <Td>
+        <Skeleton isLoading={receipt.isLoading}>
+          {l1hash ? (
+            <Link
+              className="font-mono"
+              target="_blank"
+              title={l1hash}
+              href={`${l1.blockExplorers?.default.url}/tx/${l1hash}`}
+            >
+              {truncate(l1hash)}
+            </Link>
+          ) : (
+            "N/A"
+          )}
+        </Skeleton>
+      </Td>
+      <Td>{timeLeft}</Td>
+      <Td>
+        {status.data === 3 ? <ProveButton hash={transactionHash} /> : null}
+        {status.data === 5 ? <FinalizeButton hash={transactionHash} /> : null}
+      </Td>
+    </Tr>
+  );
+};
 
-const ProveButton = memo(({ hash }: { hash: string }) => {
+const ProveButton = ({ hash }: { hash: string }) => {
   const prove = useProve();
+  const queryClient = useQueryClient();
   return (
     <SecondaryButton
       className="w-32"
-      onClick={() => prove.mutate(hash)}
+      onClick={() =>
+        prove.mutate(hash, {
+          onSuccess: () =>
+            queryClient.setQueryData(["withdrawal-status", hash], 4),
+          onError: (error) =>
+            toast.error(parseEthersError(error as string) as string),
+        })
+      }
       disabled={prove.isLoading}
     >
       {prove.isLoading ? "Proving..." : "Prove"}
     </SecondaryButton>
   );
-});
+};
 
-const FinalizeButton = memo(({ hash }: { hash: string }) => {
+const FinalizeButton = ({ hash }: { hash: string }) => {
   const finalize = useFinalize();
+  const queryClient = useQueryClient();
   return (
     <SecondaryButton
       className="w-32"
-      onClick={() => finalize.mutate(hash)}
+      onClick={() =>
+        finalize.mutate(hash, {
+          onSuccess: () =>
+            queryClient.setQueryData(["withdrawal-status", hash], 6),
+          onError: (error) =>
+            toast.error(parseEthersError(error as string) as string),
+        })
+      }
       disabled={finalize.isLoading}
     >
       {finalize.isLoading ? "Finalizing..." : "Finalize"}
     </SecondaryButton>
   );
-});
+};
