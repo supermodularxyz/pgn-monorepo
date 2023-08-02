@@ -167,25 +167,11 @@ const TransactionRow = memo(
         </Td>
         <Td>{timeLeft}</Td>
         <Td>
-          <WithdrawAction hash={transactionHash} status={status.data} />
+          {status.data === 4 ? <ProveButton hash={transactionHash} /> : null}
+          {status.data === 6 ? <FinalizeButton hash={transactionHash} /> : null}
         </Td>
       </Tr>
     );
-  }
-);
-
-const WithdrawAction = memo(
-  ({ hash, status }: { hash: string; status?: number }) => {
-    const finalize = useFinalize();
-
-    switch (status) {
-      case 3:
-        return <ProveButton hash={hash} />;
-      case 5:
-        return <FinalizeButton hash={hash} />;
-      default:
-        return null;
-    }
   }
 );
 

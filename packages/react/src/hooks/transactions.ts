@@ -18,7 +18,7 @@ export function useChallengePeriod() {
     {
       enabled: Boolean(crossChainMessenger),
       staleTime: ONE_DAY,
-      cacheTime: Infinity,
+      cacheTime: ONE_DAY,
     }
   );
 }
@@ -36,7 +36,7 @@ export function useWithdrawals() {
     {
       enabled: Boolean(crossChainMessenger && address),
       staleTime: ONE_MINUTE * 5,
-      cacheTime: Infinity,
+      cacheTime: ONE_DAY,
       retryDelay,
     }
   );
@@ -55,7 +55,7 @@ export function useWithdrawalReceipt(hash: string, status: number) {
     {
       enabled: Boolean(crossChainMessenger && hash),
       staleTime: ONE_MINUTE * 5,
-      cacheTime: Infinity,
+      cacheTime: ONE_DAY,
       retryDelay,
     }
   );
@@ -73,7 +73,7 @@ export function useWithdrawalStatus(hash: string) {
     {
       enabled: Boolean(crossChainMessenger && hash),
       staleTime: ONE_MINUTE * 5,
-      cacheTime: Infinity,
+      cacheTime: ONE_DAY,
       retryDelay,
     }
   );
@@ -91,8 +91,8 @@ export function useBlock(block: number) {
         .then((tx) => tx.timestamp * 1000),
     {
       enabled: Boolean(block && crossChainMessenger),
-      cacheTime: Infinity,
-      staleTime: Infinity,
+      cacheTime: ONE_DAY,
+      staleTime: ONE_DAY,
       retryDelay,
     }
   );
