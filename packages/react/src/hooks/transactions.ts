@@ -2,10 +2,10 @@ import { useAccount } from "wagmi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCrossChainMessenger } from "./crossChainMessenger";
 
-const ONE_MINUTE = 1000 * 60;
+const ONE_SECOND = 1000 * 60;
+const ONE_MINUTE = ONE_SECOND * 60;
 const ONE_HOUR = ONE_MINUTE * 60;
 const ONE_DAY = ONE_HOUR * 24;
-const retryDelay = 1000;
 
 export function useChallengePeriod() {
   const { data: crossChainMessenger } = useCrossChainMessenger({
@@ -37,7 +37,6 @@ export function useWithdrawals() {
       enabled: Boolean(crossChainMessenger && address),
       staleTime: ONE_MINUTE * 5,
       cacheTime: ONE_DAY,
-      retryDelay,
     }
   );
 }
@@ -56,7 +55,6 @@ export function useWithdrawalReceipt(hash: string, status: number) {
       enabled: Boolean(crossChainMessenger && hash),
       staleTime: ONE_MINUTE * 5,
       cacheTime: ONE_DAY,
-      retryDelay,
     }
   );
 }
@@ -74,7 +72,6 @@ export function useWithdrawalStatus(hash: string) {
       enabled: Boolean(crossChainMessenger && hash),
       staleTime: ONE_MINUTE * 5,
       cacheTime: ONE_DAY,
-      retryDelay,
     }
   );
 }
@@ -93,7 +90,6 @@ export function useBlock(block: number) {
       enabled: Boolean(block && crossChainMessenger),
       cacheTime: ONE_DAY,
       staleTime: ONE_DAY,
-      retryDelay,
     }
   );
 }
