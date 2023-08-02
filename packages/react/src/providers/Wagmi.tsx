@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { WagmiConfig, configureChains } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -14,7 +14,6 @@ import {
   argentWallet,
   trustWallet,
   ledgerWallet,
-  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
 import { PGNConfig } from "../types";
@@ -45,7 +44,6 @@ export const WagmiProvider = ({
 
   const { client, chains } = useMemo(() => {
     const networks = Object.values(pgnConfig.networks);
-    console.log(networks);
     const { chains, provider } = configureChains(networks, [
       jsonRpcProvider({
         rpc: (chain) => {
@@ -85,11 +83,6 @@ export const WagmiProvider = ({
       provider,
     });
 
-    // const config = createConfig({
-    //   autoConnect: true,
-    //   connectors,
-    //   publicClient,
-    // });
     return { client, chains };
   }, []);
 

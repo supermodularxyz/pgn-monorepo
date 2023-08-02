@@ -71,6 +71,10 @@ export function useCrossChainMessenger({
         getConduitSlug(l2.network as any)
       );
     },
-    { enabled: Boolean(l1SignerOrProvider && l2SignerOrProvider) }
+    {
+      enabled: Boolean(l1SignerOrProvider && l2SignerOrProvider),
+      cacheTime: Infinity,
+      staleTime: Infinity,
+    }
   );
 }
