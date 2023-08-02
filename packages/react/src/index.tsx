@@ -1,5 +1,6 @@
 import "./styles.css";
 import { createContext, memo, useContext, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 
 export * as chains from "./config/chain";
 export * as tokens from "./config/tokens";
@@ -50,6 +51,7 @@ export const BridgeProvider = memo(({ config, children }: BridgeProps) => {
 
   return (
     <WagmiProvider pgnConfig={state}>
+      <Toaster position="bottom-center" />
       <Context.Provider value={state}>{children}</Context.Provider>
     </WagmiProvider>
   );

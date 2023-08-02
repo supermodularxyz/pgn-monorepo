@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { WagmiConfig, configureChains, createConfig } from "wagmi";
+import { memo, useMemo, useState } from "react";
+import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
@@ -11,15 +11,15 @@ import {
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { PGNConfig } from "../types";
 import { MockConnector } from "wagmi/connectors/mock";
-import { createWalletClient, http } from "viem";
 import { hardhat } from "wagmi/chains";
 import {
   safeWallet,
   argentWallet,
   trustWallet,
   ledgerWallet,
-  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
+
+import { Wallet, providers } from "ethers";
 
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 
@@ -29,13 +29,17 @@ const testConnectors = [
   new MockConnector({
     chains: [hardhat, { ...hardhat, id: hardhat.id + 1 }],
     options: {
-      walletClient: createWalletClient({
-        transport: http(hardhat.rpcUrls.default.http[0]),
-        chain: hardhat,
-        account: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        key: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-        pollingInterval: 100,
-      }),
+      signer: new Wallet(
+        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+      ),
+
+      // walletClient: createWalletClient({
+      //   transport: http(hardhat.rpcUrls.default.http[0]),
+      //   chain: hardhat,
+      //   account: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      //   key: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+      //   pollingInterval: 100,
+      // }),
     },
   }),
 ];
@@ -60,9 +64,9 @@ export const WagmiProvider = ({
     return { queryClient, persister };
   });
 
-  const { config, chains } = useMemo(() => {
+  const { client, chains } = useMemo(() => {
     const networks = Object.values(pgnConfig.networks);
-    const { chains, publicClient } = configureChains(networks, [
+    const { chains, provider } = configureChains(networks, [
       jsonRpcProvider({
         rpc: (chain) => {
           const { alchemy, default: _default } = chain.rpcUrls;
@@ -95,13 +99,13 @@ export const WagmiProvider = ({
       },
     ]);
 
-    const config = createConfig({
+    const client = createClient({
       autoConnect: true,
       connectors: isTest ? testConnectors : connectors,
-      publicClient,
+      provider,
     });
 
-    return { config, chains };
+    return { client, chains };
   }, []);
 
   return (
@@ -109,7 +113,7 @@ export const WagmiProvider = ({
       client={queryClient}
       persistOptions={{ persister }}
     >
-      <WagmiConfig config={config}>
+      <WagmiConfig client={client}>
         <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
       </WagmiConfig>
     </PersistQueryClientProvider>
