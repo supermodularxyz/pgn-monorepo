@@ -2,8 +2,7 @@ import { useAccount } from "wagmi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCrossChainMessenger } from "./crossChainMessenger";
 
-const ONE_SECOND = 1000 * 60;
-const ONE_MINUTE = ONE_SECOND * 60;
+const ONE_MINUTE = 1000 * 60;
 const ONE_HOUR = ONE_MINUTE * 60;
 const ONE_DAY = ONE_HOUR * 24;
 
