@@ -61,7 +61,6 @@ export const Transactions = memo(() => {
 
 const TransactionsTable = memo(() => {
   const { data, error, isLoading } = useWithdrawals();
-  console.log(data);
   const { data: challengePeriod } = useChallengePeriod();
   return (
     <Table>

@@ -8,7 +8,6 @@ import { useProvider, useSigner } from "wagmi";
 
 import { usePGN } from "..";
 import { getConduitSlug } from "../config";
-// import { useEthersProvider, useEthersSigner } from "./providers";
 
 function createCrossChainMessenger(
   { l1SignerOrProvider, l2SignerOrProvider }: any,
