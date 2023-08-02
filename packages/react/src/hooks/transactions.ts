@@ -103,7 +103,6 @@ export function useProve() {
     l1AsSigner: true,
   });
 
-  console.log(crossChainMessenger);
   return useMutation(async (hash: string) =>
     crossChainMessenger?.proveMessage(hash).then((tx) => tx.wait())
   );
