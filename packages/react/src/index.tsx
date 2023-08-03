@@ -26,7 +26,11 @@ Sentry.init({
   integrations: [
     new Sentry.BrowserTracing({
       // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-      tracePropagationTargets: ["localhost", "https:yourserver.io/api/"],
+      tracePropagationTargets: [
+        "localhost",
+        "^https://.*.g.alchemy.com",
+        "^https://.*.publicgoods.network",
+      ],
     }),
   ],
 });
