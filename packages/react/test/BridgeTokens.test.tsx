@@ -22,27 +22,31 @@ const { getOptimismConfiguration } = vi.hoisted(() => ({
 vi.mock("@conduitxyz/sdk", () => ({ getOptimismConfiguration }));
 
 // Mock Optimism SDK
-const { depositETH, withdrawETH, approveERC20, depositERC20, withdrawERC20 } =
-  vi.hoisted(() => {
-    const mock = vi
-      .fn()
-      .mockResolvedValue({ hash: "hash", wait: vi.fn().mockResolvedValue({}) });
-    return {
-      depositETH: mock,
-      withdrawETH: mock,
-      approveERC20: mock,
-      depositERC20: mock,
-      withdrawERC20: mock,
-    };
-  });
-
 const {
-  getWithdrawalsByAddress,
-  getMessageStatus,
-  getMessageReceipt,
+  depositETH,
+  withdrawETH,
+  approveERC20,
+  depositERC20,
+  withdrawERC20,
   proveMessage,
   finalizeMessage,
 } = vi.hoisted(() => {
+  const createMock = () =>
+    vi
+      .fn()
+      .mockResolvedValue({ hash: "hash", wait: vi.fn().mockResolvedValue({}) });
+  return {
+    depositETH: createMock(),
+    withdrawETH: createMock(),
+    approveERC20: createMock(),
+    depositERC20: createMock(),
+    withdrawERC20: createMock(),
+    proveMessage: createMock(),
+    finalizeMessage: createMock(),
+  };
+});
+
+vi.mock("@eth-optimism/sdk", () => {
   const transactions = [
     {
       address: "0x4200000000000000000000000000000000000010",
@@ -103,60 +107,38 @@ const {
     [transactions[0].transactionHash]: 3,
     [transactions[1].transactionHash]: 5,
   };
-  const mock = vi
-    .fn()
-    .mockResolvedValue({ hash: "hash", wait: vi.fn().mockResolvedValue({}) });
+  const mock = vi.fn().mockResolvedValue({});
   return {
-    proveMessage: mock,
-    finalizeMessage: mock,
-    getMessageReceipt: vi.fn().mockResolvedValue({
-      transactionReceipt: { transactionHash: "l1Hash" },
-    }),
-    getMessageStatus: vi.fn((addr) => Promise.resolve(statusMap[addr] ?? 0)),
-    getWithdrawalsByAddress: vi.fn().mockResolvedValue(transactions),
-  };
-});
-const { waitForMessageStatus } = vi.hoisted(() => ({
-  waitForMessageStatus: vi.fn().mockResolvedValue({}),
-}));
-
-vi.mock("@eth-optimism/sdk", () => {
-  return {
-    MessageStatus: {
-      RELAYED: "RELAYED",
-    },
+    MessageStatus: { RELAYED: "RELAYED" },
     CrossChainMessenger: class {
       depositETH = depositETH;
       withdrawETH = withdrawETH;
       approveERC20 = approveERC20;
       depositERC20 = depositERC20;
       withdrawERC20 = withdrawERC20;
-      waitForMessageStatus = waitForMessageStatus;
-      getWithdrawalsByAddress = getWithdrawalsByAddress;
-      getMessageStatus = getMessageStatus;
-      getMessageReceipt = getMessageReceipt;
+      waitForMessageStatus = mock;
+      getWithdrawalsByAddress = vi.fn().mockResolvedValue(transactions);
+      getMessageStatus = vi.fn((addr) => Promise.resolve(statusMap[addr] ?? 0));
+      getMessageReceipt = vi.fn().mockResolvedValue({
+        transactionReceipt: { transactionHash: "l1Hash" },
+      });
       proveMessage = proveMessage;
       finalizeMessage = finalizeMessage;
     },
   };
 });
 
-// Mock useBalance hook so we don't have to mint tokens for testing
-const { useBalance } = vi.hoisted(() => ({
-  useBalance: vi.fn().mockReturnValue({
-    data: {
-      symbol: "TOK",
-      formatted: "__bal",
-      value: 10 ** 18,
-    },
-  }),
-}));
-
 vi.mock("wagmi", async () => {
   const actual = await vi.importActual("wagmi");
   return {
     ...(actual as any),
-    useBalance,
+    useBalance: vi.fn().mockReturnValue({
+      data: {
+        symbol: "TOK",
+        formatted: "__bal",
+        value: 10 ** 18,
+      },
+    }),
   };
 });
 
@@ -165,7 +147,6 @@ describe("<BridgeTokens />", () => {
   beforeEach(() => {
     user = userEvent.setup();
   });
-  afterEach(cleanup);
 
   it("deposits ETH", async () => {
     await connectAndEnterAmount({ user });
@@ -179,21 +160,22 @@ describe("<BridgeTokens />", () => {
     await connectAndEnterAmount({ user });
     await swapNetworks({ user });
 
-    let withdrawButton;
-    await waitFor(() => {
-      withdrawButton = screen.getByRole("button", { name: "Withdraw" });
-      user.click(withdrawButton);
+    const withdrawButton = await screen.findByRole("button", {
+      name: "Withdraw",
     });
 
-    await waitFor(() => {
-      expect(withdrawETH).toHaveBeenCalledWith("1000000000000000000");
-    });
+    user.click(withdrawButton);
+    await waitFor(() =>
+      expect(withdrawETH).toHaveBeenCalledWith("1000000000000000000")
+    );
   });
   it("deposits ERC20", async () => {
     await connectAndEnterAmount({ user });
     await selectToken({ user: userEvent, token: "TestToken" });
 
-    const depositButton = screen.getByRole("button", { name: "Deposit" });
+    const depositButton = await screen.findByRole("button", {
+      name: "Deposit",
+    });
     user.click(depositButton);
 
     await waitFor(() => {
@@ -217,11 +199,13 @@ describe("<BridgeTokens />", () => {
     await selectToken({ user, token: "TestToken" });
 
     await swapNetworks({ user });
-    let withdrawButton;
-    await waitFor(() => {
-      withdrawButton = screen.getByRole("button", { name: "Withdraw" });
-      user.click(withdrawButton);
+
+    const l2 = await screen.findByDisplayValue("From Hardhat");
+
+    const withdrawButton = await screen.findByRole("button", {
+      name: "Withdraw",
     });
+    user.click(withdrawButton);
 
     await waitFor(() => {
       expect(withdrawERC20).toHaveBeenCalledWith(
@@ -234,12 +218,10 @@ describe("<BridgeTokens />", () => {
 
   it("proveMessage", async () => {
     render(<Transactions />);
+    await connectWallet(user);
 
-    let proveButton;
-    await waitFor(() => {
-      proveButton = screen.getByRole("button", { name: "Prove" });
-      user.click(proveButton);
-    });
+    const proveButton = await screen.findByRole("button", { name: "Prove" });
+    user.click(proveButton);
 
     await waitFor(() => {
       expect(proveMessage).toHaveBeenCalledWith(
@@ -249,12 +231,12 @@ describe("<BridgeTokens />", () => {
   });
   it("finalizeMessage", async () => {
     render(<Transactions />);
+    await connectWallet(user);
 
-    let finalizeButton;
-    await waitFor(() => {
-      finalizeButton = screen.getByRole("button", { name: "Finalize" });
-      user.click(finalizeButton);
+    const finalizeButton = await screen.findByRole("button", {
+      name: "Finalize",
     });
+    user.click(finalizeButton);
 
     await waitFor(() => {
       expect(finalizeMessage).toHaveBeenCalledWith(
@@ -264,16 +246,18 @@ describe("<BridgeTokens />", () => {
   });
 });
 
-async function connectAndEnterAmount({ user }: { user: UserEvent }) {
-  render(<BridgeTokens />);
-
+async function connectWallet(user: userEvent) {
   const connectButton = screen.getByRole("button", { name: "Mock" });
   user.click(connectButton);
 
   await waitFor(async () => {
     expect(screen.getByText("__connected__")).toBeInTheDocument();
   });
+}
+async function connectAndEnterAmount({ user }: { user: UserEvent }) {
+  render(<BridgeTokens />);
 
+  await connectWallet(user);
   const amount = screen.getByRole("spinbutton", { name: "Amount" });
   fireEvent.change(amount, { target: { value: "1" } });
 
