@@ -88,7 +88,7 @@ function Connect() {
               key={x.id}
               role="button"
               onClick={() => {
-                connect({ connector: x, chainId: hardhat.id });
+                connect({ connector: x });
               }}
             >
               {isLoading && x.id === pendingConnector?.id && "Connecting to "}
