@@ -3,6 +3,11 @@
   "include": ["."],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
-    "lib": ["dom", "ES2015"]
+    "lib": ["dom", "ES2015"],
+    "sourceMap": true,
+    "inlineSources": true,
+    // Set `sourceRoot` to  "/" to strip the build path prefix from
+    // generated source code references. This will improve issue grouping in Sentry.
+    "sourceRoot": "/"
   }
 }
