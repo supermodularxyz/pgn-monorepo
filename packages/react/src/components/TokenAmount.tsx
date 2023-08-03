@@ -41,7 +41,6 @@ export function TokenAmount({
           placeholder="0.0"
           className="flex-1"
           disabled={disabled}
-          id="amount"
           {...form.register("amount", { valueAsNumber: true })}
         />
         <MaxButton
