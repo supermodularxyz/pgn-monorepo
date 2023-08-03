@@ -46,7 +46,7 @@ export function TokenAmount({
         <MaxButton
           disabled={disabled}
           onClick={() =>
-            form.setValue("amount", balanceIn?.formatted.slice(0, 8))
+            form.setValue("amount", balanceIn?.formatted?.slice(0, 8))
           }
           type="button"
         >
