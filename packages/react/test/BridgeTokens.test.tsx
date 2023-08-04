@@ -100,8 +100,9 @@ vi.mock("@eth-optimism/sdk", () => {
     },
   ];
   const statusMap = {
-    [transactions[0].transactionHash]: 3,
-    [transactions[1].transactionHash]: 5,
+    [transactions[0].transactionHash]: 2,
+    [transactions[1].transactionHash]: 3,
+    [transactions[2].transactionHash]: 5,
   };
   const mock = vi.fn().mockResolvedValue({});
   return {
@@ -120,6 +121,10 @@ vi.mock("@eth-optimism/sdk", () => {
       });
       proveMessage = proveMessage;
       finalizeMessage = finalizeMessage;
+      getChallengePeriodSeconds = mock;
+      l2Provider = {
+        getBlock: mock,
+      };
     },
   };
 });
@@ -174,7 +179,6 @@ describe("<BridgeTokens />", () => {
     render(<BridgeTokens />);
     await connectWallet(user);
     await enterAmount(user);
-    await switchToNetwork(user, "Hardhat");
 
     await selectToken({ user: userEvent, token: "TestToken" });
 
@@ -228,21 +232,18 @@ describe("<BridgeTokens />", () => {
     const switchButton = await screen.findByRole("button", {
       name: "Switch to Hardhat",
     });
-    console.log(switchButton);
     user.click(switchButton);
 
-    // await screen.
-    // await waitFor(() => )
     const proveButton = await screen.findByRole("button", { name: "Prove" });
     user.click(proveButton);
 
-    await waitFor(() => {
+    await waitFor(() =>
       expect(proveMessage).toHaveBeenCalledWith(
-        "0x524070b42970509ee8e0b0ed46fbc8f5c7c825803258e154c85fcde7f24cf509"
-      );
-    });
+        "0x90b79797d6decd0803e50c63fa23674b7629185a8203f1ea317f4d83a3ae4863"
+      )
+    );
   });
-  it.skip("finalizeMessage", async () => {
+  it("finalizeMessage", async () => {
     render(<Transactions />);
     await connectWallet(user);
 
@@ -251,11 +252,11 @@ describe("<BridgeTokens />", () => {
     });
     user.click(finalizeButton);
 
-    await waitFor(() => {
+    await waitFor(() =>
       expect(finalizeMessage).toHaveBeenCalledWith(
-        "0x90b79797d6decd0803e50c63fa23674b7629185a8203f1ea317f4d83a3ae4863"
-      );
-    });
+        "0x215d62828e73793710b5b4463b1668de6a98a5323580b811af6ea0a2d9b05ce9"
+      )
+    );
   });
 });
 
