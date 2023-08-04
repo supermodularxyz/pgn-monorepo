@@ -221,10 +221,18 @@ describe("<BridgeTokens />", () => {
     });
   });
 
-  it.skip("proveMessage", async () => {
+  it("proveMessage", async () => {
     render(<Transactions />);
     await connectWallet(user);
 
+    const switchButton = await screen.findByRole("button", {
+      name: "Switch to Hardhat",
+    });
+    console.log(switchButton);
+    user.click(switchButton);
+
+    // await screen.
+    // await waitFor(() => )
     const proveButton = await screen.findByRole("button", { name: "Prove" });
     user.click(proveButton);
 
@@ -286,7 +294,6 @@ async function selectToken({
 async function switchToNetwork(user: UserEvent, network = "Hardhat") {
   // Check if network is currently active
   if ((await screen.findByTestId("from")).textContent === network) {
-    return;
   }
   const swapButton = await screen.findByRole("button", { name: "⇌" });
 
