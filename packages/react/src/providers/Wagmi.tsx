@@ -1,4 +1,4 @@
-import { memo, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -19,7 +19,7 @@ import {
   ledgerWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
-import { Wallet, providers } from "ethers";
+import { Wallet } from "ethers";
 
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 
@@ -32,14 +32,6 @@ const testConnectors = [
       signer: new Wallet(
         "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
       ),
-
-      // walletClient: createWalletClient({
-      //   transport: http(hardhat.rpcUrls.default.http[0]),
-      //   chain: hardhat,
-      //   account: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-      //   key: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-      //   pollingInterval: 100,
-      // }),
     },
   }),
 ];
