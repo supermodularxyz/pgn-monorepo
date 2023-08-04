@@ -61,63 +61,9 @@ export const Transactions = memo(() => {
   return <TransactionsTable />;
 });
 
-const getWindowWidth = () =>
-  typeof window !== "undefined" ? window.innerWidth : 1280;
 const TransactionsTable = memo(() => {
-  // const { data, error, isLoading } = useWithdrawals();
+  const { data, error, isLoading } = useWithdrawals();
   const { data: challengePeriod } = useChallengePeriod();
-  const isLoading = false;
-  // console.log(data);
-  const data = [
-    {
-      direction: 1,
-      from: "0xf66CcEDcD3f99C234cefA713Ab7399F5DD3a6770",
-      to: "0xf66CcEDcD3f99C234cefA713Ab7399F5DD3a6770",
-      l1Token: "0x0000000000000000000000000000000000000000",
-      l2Token: "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000",
-      amount: {
-        type: "BigNumber",
-        hex: "0x2386f26fc10000",
-      },
-      data: "0x",
-      logIndex: 0,
-      blockNumber: 2609200,
-      transactionHash:
-        "0x5ea331ee147d04ecce0a20e0ffd7fdfe999f38fd0ec1f26e162847119a9db7f5",
-    },
-    {
-      direction: 1,
-      from: "0xf66CcEDcD3f99C234cefA713Ab7399F5DD3a6770",
-      to: "0xf66CcEDcD3f99C234cefA713Ab7399F5DD3a6770",
-      l1Token: "0x10246FE5Bf3b06Fc688eD4AA1445FF52358CE3A9",
-      l2Token: "0x7c6b91D9Be155A6Db01f749217d76fF02A7227F2",
-      amount: {
-        type: "BigNumber",
-        hex: "0x016345785d8a0000",
-      },
-      data: "0x",
-      logIndex: 2,
-      blockNumber: 2609151,
-      transactionHash:
-        "0xaa553a7953bd5c4ad11ca6260c2337bd6449fe83c249116817ccddf8751ba31d",
-    },
-    {
-      direction: 1,
-      from: "0xf66CcEDcD3f99C234cefA713Ab7399F5DD3a6770",
-      to: "0xf66CcEDcD3f99C234cefA713Ab7399F5DD3a6770",
-      l1Token: "0x10246FE5Bf3b06Fc688eD4AA1445FF52358CE3A9",
-      l2Token: "0x7c6b91D9Be155A6Db01f749217d76fF02A7227F2",
-      amount: {
-        type: "BigNumber",
-        hex: "0x2386f26fc10000",
-      },
-      data: "0x",
-      logIndex: 2,
-      blockNumber: 2242818,
-      transactionHash:
-        "0x07a7e66dabd3c81787478f11faa693497d7f887f024b0afb1cf227e0f08bf549",
-    },
-  ];
 
   return (
     <div className="overflow-x-auto relative">
