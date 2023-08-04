@@ -107,8 +107,7 @@ export function useFinalize() {
     l1AsSigner: true,
   });
 
-  return useMutation(async (hash: string) => {
-    console.log("finalize", hash, crossChainMessenger);
-    return crossChainMessenger?.finalizeMessage(hash).then((tx) => tx.wait());
-  });
+  return useMutation(async (hash: string) =>
+    crossChainMessenger?.finalizeMessage(hash).then((tx) => tx.wait())
+  );
 }
