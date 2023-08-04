@@ -2,20 +2,23 @@ import { tv } from "tailwind-variants";
 import { createComponent } from ".";
 
 const table = tv({
-  base: "w-full text-xs sm:text-sm",
+  base: "w-full text-sm",
 });
 
 const variants = { align: { right: "text-right" } };
 
 const tbody = tv({ base: "" });
 const thead = tv({ base: "" });
-const tr = tv({ base: "hover:bg-muted border-b transition-colors", variants });
+const tr = tv({
+  base: "block sm:table-row hover:bg-muted border-b transition-colors",
+  variants,
+});
 const th = tv({
   base: "px-1 sm:px-2 text-left font-medium h-10 text-muted-foreground align-middle",
   variants,
 });
 const td = tv({
-  base: "p-1 sm:p-2 align-middle whitespace-nowrap break-normal",
+  base: "flex sm:table-cell p-1 sm:p-2 align-middle whitespace-nowrap break-normal",
   variants,
 });
 

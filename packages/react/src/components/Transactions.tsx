@@ -68,7 +68,7 @@ const TransactionsTable = memo(() => {
   return (
     <div className="overflow-x-auto relative">
       <Table>
-        <Thead>
+        <Thead className="sm:static absolute  hidden sm:table-header-group">
           <Tr>
             <Th>Hash</Th>
             <Th>Status</Th>
@@ -140,7 +140,7 @@ const TransactionRow = ({
   const timeLeft = timestamp ? timeAgo(timestamp + challengePeriod) : null;
   return (
     <Tr>
-      <Td>
+      <Td className="before:content-['Hash'] before:block sm:before:hidden justify-between">
         <Link
           className="font-mono"
           target="_blank"
@@ -150,11 +150,13 @@ const TransactionRow = ({
           {truncate(transactionHash)}
         </Link>
       </Td>
-      <Td>
+      <Td className="before:content-['Status'] before:block sm:before:hidden justify-between">
         <Skeleton isLoading={status.isLoading}>{statusText}</Skeleton>
       </Td>
-      <Td>{timestamp ? <>{timeAgo(timestamp)}</> : null}</Td>
-      <Td>
+      <Td className="before:content-['Timestamp'] before:block sm:before:hidden justify-between">
+        {timestamp ? <>{timeAgo(timestamp)}</> : null}
+      </Td>
+      <Td className="before:content-['L1\00a0Hash'] before:block sm:before:hidden justify-between">
         <Skeleton isLoading={receipt.isLoading}>
           {l1hash ? (
             <Link
@@ -170,7 +172,9 @@ const TransactionRow = ({
           )}
         </Skeleton>
       </Td>
-      <Td>{timeLeft}</Td>
+      <Td className="before:content-['Time\00a0left'] before:block sm:before:hidden justify-between">
+        {timeLeft}
+      </Td>
       <Td>
         {status.data === 3 ? <ProveButton hash={transactionHash} /> : null}
         {status.data === 5 ? <FinalizeButton hash={transactionHash} /> : null}
@@ -184,7 +188,7 @@ const ProveButton = ({ hash }: { hash: string }) => {
   const queryClient = useQueryClient();
   return (
     <SecondaryButton
-      className="w-32"
+      className="w-full sm:w-32"
       onClick={() =>
         prove.mutate(hash, {
           onSuccess: () =>
@@ -205,7 +209,7 @@ const FinalizeButton = ({ hash }: { hash: string }) => {
   const queryClient = useQueryClient();
   return (
     <SecondaryButton
-      className="w-32"
+      className="w-full sm:w-32"
       onClick={() =>
         finalize.mutate(hash, {
           onSuccess: () =>
