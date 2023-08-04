@@ -2,7 +2,7 @@ import { tv } from "tailwind-variants";
 import { createComponent } from ".";
 
 const table = tv({
-  base: "w-full text-sm",
+  base: "w-full text-xs sm:text-sm",
 });
 
 const variants = { align: { right: "text-right" } };
@@ -11,10 +11,13 @@ const tbody = tv({ base: "" });
 const thead = tv({ base: "" });
 const tr = tv({ base: "hover:bg-muted border-b transition-colors", variants });
 const th = tv({
-  base: "px-2 text-left font-medium h-10 text-muted-foreground align-middle",
+  base: "px-1 sm:px-2 text-left font-medium h-10 text-muted-foreground align-middle",
   variants,
 });
-const td = tv({ base: "p-2 align-middle", variants });
+const td = tv({
+  base: "p-1 sm:p-2 align-middle whitespace-nowrap break-normal",
+  variants,
+});
 
 export const Table = createComponent("table", table);
 export const Thead = createComponent("thead", thead);
