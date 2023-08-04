@@ -172,7 +172,7 @@ const TransactionRow = ({
       </Td>
       <Td>{timeLeft}</Td>
       <Td>
-        {1 || status.data === 3 ? <ProveButton hash={transactionHash} /> : null}
+        {status.data === 3 ? <ProveButton hash={transactionHash} /> : null}
         {status.data === 5 ? <FinalizeButton hash={transactionHash} /> : null}
       </Td>
     </Tr>
