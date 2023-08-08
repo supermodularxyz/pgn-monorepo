@@ -13,16 +13,20 @@ export function ChainSelect({
   chainOut: Chain;
 }) {
   const { switchNetwork } = useSwitchNetwork();
-
   return (
     <div className="flex items-end">
       <div className="flex-1">
         <Label>From</Label>
-        <ChainItem>{chainIn.name}</ChainItem>
+        <ChainItem data-testid="from">{chainIn.name}</ChainItem>
       </div>
-      <SwapButton type="button" onClick={() => switchNetwork?.(chainOut.id)}>
+      <SwapButton
+        type="button"
+        disabled={!switchNetwork}
+        onClick={() => switchNetwork?.(chainOut.id)}
+      >
         ⇌
       </SwapButton>
+
       <div className="flex-1">
         <Label>To</Label>
         <ChainItem className="justify-end">{chainOut.name}</ChainItem>

@@ -67,11 +67,13 @@ export const BridgeProvider = memo(({ config, children }: BridgeProps) => {
 });
 
 function mergeConfig(config: PGNConfig) {
-  let merged = merge(config, defaultConfig) as PGNConfig;
-  const { networks } = merged;
-  const tokens = merged.tokens.filter(
+  const theme = merge(config.theme || {}, defaultConfig.theme);
+  const tokens = config.tokens.filter(
     (token: Token) =>
-      token.tokens[networks.l1.network] && token.tokens[networks.l2.network]
+      token.tokens[config.networks.l1.network] &&
+      token.tokens[config.networks.l2.network]
   );
-  return { ...merged, tokens };
+
+  console.log(config.networks);
+  return { ...config, tokens, theme };
 }

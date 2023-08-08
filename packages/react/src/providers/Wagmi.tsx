@@ -1,5 +1,5 @@
-import { memo, useMemo, useState } from "react";
-import { WagmiConfig, configureChains } from "wagmi";
+import { useMemo, useState } from "react";
+import { WagmiConfig, configureChains, createClient } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
@@ -9,6 +9,9 @@ import {
   getDefaultWallets,
 } from "@rainbow-me/rainbowkit";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { PGNConfig } from "../types";
+import { MockConnector } from "wagmi/connectors/mock";
+import { hardhat } from "wagmi/chains";
 import {
   safeWallet,
   argentWallet,
@@ -16,11 +19,22 @@ import {
   ledgerWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
-import { PGNConfig } from "../types";
-import { createClient } from "wagmi";
+import { Wallet } from "ethers";
 
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 
+const isTest = process.env.NODE_ENV === "test";
+
+const testConnectors = [
+  new MockConnector({
+    chains: [hardhat, { ...hardhat, id: hardhat.id + 1 }],
+    options: {
+      signer: new Wallet(
+        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+      ),
+    },
+  }),
+];
 export const WagmiProvider = ({
   children,
   pgnConfig,
@@ -79,7 +93,7 @@ export const WagmiProvider = ({
 
     const client = createClient({
       autoConnect: true,
-      connectors,
+      connectors: isTest ? testConnectors : connectors,
       provider,
     });
 
