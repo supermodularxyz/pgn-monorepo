@@ -47,9 +47,9 @@ export function TransferAction({
       </Button>
     );
   }
+
   const balanceOverAmount =
-    amount &&
-    balance?.value >= parseUnits(String(parseFloat(amount)), decimals);
+    amount && balance?.value.gte(parseUnits(amount, decimals));
 
   if (balanceOverAmount) {
     return (
