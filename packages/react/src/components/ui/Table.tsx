@@ -9,12 +9,18 @@ const variants = { align: { right: "text-right" } };
 
 const tbody = tv({ base: "" });
 const thead = tv({ base: "" });
-const tr = tv({ base: "hover:bg-muted border-b transition-colors", variants });
-const th = tv({
-  base: "px-2 text-left font-medium h-10 text-muted-foreground align-middle",
+const tr = tv({
+  base: "block sm:table-row hover:bg-muted border-b transition-colors",
   variants,
 });
-const td = tv({ base: "p-2 align-middle", variants });
+const th = tv({
+  base: "px-1 sm:px-2 text-left font-medium h-10 text-muted-foreground align-middle",
+  variants,
+});
+const td = tv({
+  base: "flex sm:table-cell p-1 sm:p-2 align-middle whitespace-nowrap break-normal",
+  variants,
+});
 
 export const Table = createComponent("table", table);
 export const Thead = createComponent("thead", thead);

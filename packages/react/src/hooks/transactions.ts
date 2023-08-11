@@ -5,7 +5,6 @@ import { useCrossChainMessenger } from "./crossChainMessenger";
 const ONE_MINUTE = 1000 * 60;
 const ONE_HOUR = ONE_MINUTE * 60;
 const ONE_DAY = ONE_HOUR * 24;
-const retryDelay = 1000;
 
 export function useChallengePeriod() {
   const { data: crossChainMessenger } = useCrossChainMessenger({
@@ -18,7 +17,7 @@ export function useChallengePeriod() {
     {
       enabled: Boolean(crossChainMessenger),
       staleTime: ONE_DAY,
-      cacheTime: Infinity,
+      cacheTime: ONE_DAY,
     }
   );
 }
@@ -36,8 +35,7 @@ export function useWithdrawals() {
     {
       enabled: Boolean(crossChainMessenger && address),
       staleTime: ONE_MINUTE * 5,
-      cacheTime: Infinity,
-      retryDelay,
+      cacheTime: ONE_DAY,
     }
   );
 }
@@ -55,8 +53,7 @@ export function useWithdrawalReceipt(hash: string, status: number) {
     {
       enabled: Boolean(crossChainMessenger && hash),
       staleTime: ONE_MINUTE * 5,
-      cacheTime: Infinity,
-      retryDelay,
+      cacheTime: ONE_DAY,
     }
   );
 }
@@ -73,8 +70,7 @@ export function useWithdrawalStatus(hash: string) {
     {
       enabled: Boolean(crossChainMessenger && hash),
       staleTime: ONE_MINUTE * 5,
-      cacheTime: Infinity,
-      retryDelay,
+      cacheTime: ONE_DAY,
     }
   );
 }
@@ -91,9 +87,8 @@ export function useBlock(block: number) {
         .then((tx) => tx.timestamp * 1000),
     {
       enabled: Boolean(block && crossChainMessenger),
-      cacheTime: Infinity,
-      staleTime: Infinity,
-      retryDelay,
+      cacheTime: ONE_DAY,
+      staleTime: ONE_DAY,
     }
   );
 }
@@ -102,6 +97,7 @@ export function useProve() {
   const { data: crossChainMessenger } = useCrossChainMessenger({
     l1AsSigner: true,
   });
+
   return useMutation(async (hash: string) =>
     crossChainMessenger?.proveMessage(hash).then((tx) => tx.wait())
   );

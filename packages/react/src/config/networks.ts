@@ -1,4 +1,4 @@
-import { mainnet, sepolia } from "wagmi/chains";
+import { mainnet, sepolia } from "@wagmi/chains";
 import { pgn, pgnTestnet } from "./chain";
 
 export const supportedChains = {

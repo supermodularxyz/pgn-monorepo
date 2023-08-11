@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { WagmiConfig, configureChains, createConfig } from "wagmi";
+import { memo, useMemo, useState } from "react";
+import { WagmiConfig, configureChains } from "wagmi";
 import { QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
@@ -14,10 +14,10 @@ import {
   argentWallet,
   trustWallet,
   ledgerWallet,
-  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 
 import { PGNConfig } from "../types";
+import { createClient } from "wagmi";
 
 const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_KEY;
 
@@ -42,9 +42,9 @@ export const WagmiProvider = ({
     return { queryClient, persister };
   });
 
-  const { config, chains } = useMemo(() => {
+  const { client, chains } = useMemo(() => {
     const networks = Object.values(pgnConfig.networks);
-    const { chains, publicClient } = configureChains(networks, [
+    const { chains, provider } = configureChains(networks, [
       jsonRpcProvider({
         rpc: (chain) => {
           const { alchemy, default: _default } = chain.rpcUrls;
@@ -77,12 +77,13 @@ export const WagmiProvider = ({
       },
     ]);
 
-    const config = createConfig({
+    const client = createClient({
       autoConnect: true,
       connectors,
-      publicClient,
+      provider,
     });
-    return { config, chains };
+
+    return { client, chains };
   }, []);
 
   return (
@@ -90,7 +91,7 @@ export const WagmiProvider = ({
       client={queryClient}
       persistOptions={{ persister }}
     >
-      <WagmiConfig config={config}>
+      <WagmiConfig client={client}>
         <RainbowKitProvider chains={chains}>{children}</RainbowKitProvider>
       </WagmiConfig>
     </PersistQueryClientProvider>

@@ -13,8 +13,9 @@ import { ErrorMessage } from "./ErrorMessage";
 import { useSelectedToken } from "../hooks/useSelectedToken";
 import { Card } from "./ui/Card";
 import { memo, useMemo } from "react";
-import { parseEther } from "viem";
+import { ethers } from "ethers";
 
+const parseEther = ethers.utils.parseEther;
 export const Actions = {
   Deposit: "Deposit",
   Withdraw: "Withdraw",

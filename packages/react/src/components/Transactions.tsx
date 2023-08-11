@@ -1,7 +1,8 @@
-import { PropsWithChildren, memo } from "react";
+import { PropsWithChildren, memo, useMemo } from "react";
 import { useAccount, useNetwork } from "wagmi";
+import { useQueryClient } from "@tanstack/react-query";
 import { TokenBridgeMessage } from "@eth-optimism/sdk";
-
+import toast from "react-hot-toast";
 import { ConnectWallet } from "./ConnectButton";
 import { Link } from "./ui/Link";
 import { SecondaryButton } from "./ui/Button";
@@ -23,6 +24,7 @@ import {
 
 import { usePGN } from "..";
 import { Skeleton } from "./ui/Skeleton";
+import { parseEthersError } from "../utils/revertReason";
 
 export const Transactions = memo(() => {
   const {
@@ -62,44 +64,48 @@ export const Transactions = memo(() => {
 const TransactionsTable = memo(() => {
   const { data, error, isLoading } = useWithdrawals();
   const { data: challengePeriod } = useChallengePeriod();
+
   return (
-    <Table>
-      <Thead>
-        <Tr>
-          <Th className="w-40">Hash</Th>
-          <Th>Status</Th>
-          <Th>Timestamp</Th>
-          <Th>L1 hash</Th>
-          <Th>Time left</Th>
-          <Th>Action</Th>
-        </Tr>
-      </Thead>
-      <Tbody>
-        {isLoading ? (
+    <div className="overflow-x-auto relative">
+      <Table>
+        <Thead className="sm:static absolute  hidden sm:table-header-group">
           <Tr>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Td key={i}>
-                <Skeleton isLoading />
+            <Th>Hash</Th>
+            <Th>Status</Th>
+            <Th>Timestamp</Th>
+            <Th>L1 hash</Th>
+            <Th>Time left</Th>
+            <Th>Action</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {isLoading ? (
+            <Tr>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Td key={i}>
+                  <Skeleton isLoading />
+                </Td>
+              ))}
+            </Tr>
+          ) : data?.length ? (
+            data.map(({ transactionHash, blockNumber }) => (
+              <TransactionRow
+                key={transactionHash}
+                challengePeriod={challengePeriod}
+                transactionHash={transactionHash}
+                blockNumber={blockNumber}
+              />
+            ))
+          ) : (
+            <Tr>
+              <Td colSpan={6} className="text-center">
+                No transactions found
               </Td>
-            ))}
-          </Tr>
-        ) : data?.length ? (
-          data.map((tx) => (
-            <TransactionRow
-              key={tx.transactionHash}
-              challengePeriod={challengePeriod}
-              {...tx}
-            />
-          ))
-        ) : (
-          <Tr>
-            <Td colSpan={6} className="text-center">
-              No transactions found
-            </Td>
-          </Tr>
-        )}
-      </Tbody>
-    </Table>
+            </Tr>
+          )}
+        </Tbody>
+      </Table>
+    </div>
   );
 });
 
@@ -110,97 +116,111 @@ const withdrawStatusMap = {
   5: "Ready to relay",
   6: "Relayed",
 };
-const TransactionRow = memo(
-  ({
-    transactionHash,
-    blockNumber,
-    challengePeriod = 0,
-  }: TokenBridgeMessage & { challengePeriod?: number }) => {
-    const { data: timestamp = 0 } = useBlock(blockNumber);
-    const {
-      networks: { l1, l2 },
-    } = usePGN();
-    const status = useWithdrawalStatus(transactionHash);
-    const receipt = useWithdrawalReceipt(
-      transactionHash,
-      status?.data as number
-    );
-    const l1hash = receipt.data?.transactionReceipt.transactionHash;
+const TransactionRow = ({
+  transactionHash,
+  blockNumber,
+  challengePeriod = 0,
+}: {
+  blockNumber: number;
+  transactionHash: string;
+  challengePeriod?: number;
+}) => {
+  const { data: timestamp = 0 } = useBlock(blockNumber);
+  const {
+    networks: { l1, l2 },
+  } = usePGN();
+  const status = useWithdrawalStatus(transactionHash);
+  const receipt = useWithdrawalReceipt(transactionHash, status?.data as number);
+  const l1hash = receipt.data?.transactionReceipt.transactionHash;
 
-    const statusText =
-      withdrawStatusMap[status.data as keyof typeof withdrawStatusMap] ||
-      "<unknown>";
+  const statusText =
+    withdrawStatusMap[status.data as keyof typeof withdrawStatusMap] ||
+    "<unknown>";
 
-    const timeLeft = timestamp ? timeAgo(timestamp + challengePeriod) : null;
-    return (
-      <Tr>
-        <Td>
-          <Link
-            className="font-mono"
-            target="_blank"
-            title={transactionHash}
-            href={`${l2.blockExplorers?.default.url}/tx/${transactionHash}`}
-          >
-            {truncate(transactionHash)}
-          </Link>
-        </Td>
-        <Td>
-          <Skeleton isLoading={status.isLoading}>{statusText}</Skeleton>
-        </Td>
-        <Td>{timestamp ? <>{timeAgo(timestamp)}</> : null}</Td>
-        <Td>
-          <Skeleton isLoading={receipt.isLoading}>
-            {l1hash ? (
-              <Link
-                className="font-mono"
-                target="_blank"
-                title={l1hash}
-                href={`${l1.blockExplorers?.default.url}/tx/${l1hash}`}
-              >
-                {truncate(l1hash)}
-              </Link>
-            ) : (
-              "N/A"
-            )}
-          </Skeleton>
-        </Td>
-        <Td>{timeLeft}</Td>
-        <Td>
-          <WithdrawAction hash={transactionHash} status={status.data} />
-        </Td>
-      </Tr>
-    );
-  }
-);
+  const timeLeft = timestamp ? timeAgo(timestamp + challengePeriod) : null;
+  return (
+    <Tr>
+      <Td className="before:content-['Hash'] before:block sm:before:hidden justify-between">
+        <Link
+          className="font-mono"
+          target="_blank"
+          title={transactionHash}
+          href={`${l2.blockExplorers?.default.url}/tx/${transactionHash}`}
+        >
+          {truncate(transactionHash)}
+        </Link>
+      </Td>
+      <Td className="before:content-['Status'] before:block sm:before:hidden justify-between">
+        <Skeleton isLoading={status.isLoading}>{statusText}</Skeleton>
+      </Td>
+      <Td className="before:content-['Timestamp'] before:block sm:before:hidden justify-between">
+        {timestamp ? <>{timeAgo(timestamp)}</> : null}
+      </Td>
+      <Td className="before:content-['L1\00a0Hash'] before:block sm:before:hidden justify-between">
+        <Skeleton isLoading={receipt.isLoading}>
+          {l1hash ? (
+            <Link
+              className="font-mono"
+              target="_blank"
+              title={l1hash}
+              href={`${l1.blockExplorers?.default.url}/tx/${l1hash}`}
+            >
+              {truncate(l1hash)}
+            </Link>
+          ) : (
+            "N/A"
+          )}
+        </Skeleton>
+      </Td>
+      <Td className="before:content-['Time\00a0left'] before:block sm:before:hidden justify-between">
+        {timeLeft}
+      </Td>
+      <Td>
+        {status.data === 3 ? <ProveButton hash={transactionHash} /> : null}
+        {status.data === 5 ? <FinalizeButton hash={transactionHash} /> : null}
+      </Td>
+    </Tr>
+  );
+};
 
-const WithdrawAction = memo(
-  ({ hash, status }: { hash: string; status?: number }) => {
-    const prove = useProve();
-    const finalize = useFinalize();
+const ProveButton = ({ hash }: { hash: string }) => {
+  const prove = useProve();
+  const queryClient = useQueryClient();
+  return (
+    <SecondaryButton
+      className="w-full sm:w-32"
+      onClick={() =>
+        prove.mutate(hash, {
+          onSuccess: () =>
+            queryClient.setQueryData(["withdrawal-status", hash], 4),
+          onError: (error) =>
+            toast.error(parseEthersError(error as string) as string),
+        })
+      }
+      disabled={prove.isLoading}
+    >
+      {prove.isLoading ? "Proving..." : "Prove"}
+    </SecondaryButton>
+  );
+};
 
-    switch (status) {
-      case 3:
-        return (
-          <SecondaryButton
-            className="w-32"
-            onClick={() => prove.mutate(hash)}
-            disabled={prove.isLoading}
-          >
-            {prove.isLoading ? "Proving..." : "Prove"}
-          </SecondaryButton>
-        );
-      case 5:
-        return (
-          <SecondaryButton
-            className="w-32"
-            onClick={() => finalize.mutate(hash)}
-            disabled={finalize.isLoading}
-          >
-            {finalize.isLoading ? "Finalizing..." : "Finalize"}
-          </SecondaryButton>
-        );
-      default:
-        return null;
-    }
-  }
-);
+const FinalizeButton = ({ hash }: { hash: string }) => {
+  const finalize = useFinalize();
+  const queryClient = useQueryClient();
+  return (
+    <SecondaryButton
+      className="w-full sm:w-32"
+      onClick={() =>
+        finalize.mutate(hash, {
+          onSuccess: () =>
+            queryClient.setQueryData(["withdrawal-status", hash], 6),
+          onError: (error) =>
+            toast.error(parseEthersError(error as string) as string),
+        })
+      }
+      disabled={finalize.isLoading}
+    >
+      {finalize.isLoading ? "Finalizing..." : "Finalize"}
+    </SecondaryButton>
+  );
+};

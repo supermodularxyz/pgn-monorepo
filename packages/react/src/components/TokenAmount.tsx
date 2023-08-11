@@ -40,12 +40,13 @@ export function TokenAmount({
           placeholder="0.0"
           className="flex-1"
           disabled={disabled}
+          id="amount"
           {...form.register("amount", { valueAsNumber: true })}
         />
         <MaxButton
           disabled={disabled}
           onClick={() =>
-            form.setValue("amount", balanceIn?.formatted.slice(0, 8))
+            form.setValue("amount", balanceIn?.formatted?.slice(0, 8))
           }
           type="button"
         >
