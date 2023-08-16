@@ -32,3 +32,20 @@ export const TestToken = {
     },
   },
 };
+
+export const USDC = {
+  name: "USD Coin",
+  symbol: "USDC",
+  decimals: 6,
+  description: "",
+  website: "",
+  twitter: "",
+  tokens: {
+    homestead: {
+      address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    },
+    pgn: {
+      address: "0x688f3674e2c2F1895917CDd01831AB463D291Ba9",
+    },
+  },
+};
