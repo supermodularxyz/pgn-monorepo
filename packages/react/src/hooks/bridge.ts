@@ -159,6 +159,7 @@ async function getAllowanceERC20({
     l1Address,
     l2Address
   );
+
   return contract.allowance(
     await crossChainMessenger.l1Signer.getAddress(),
     bridge.l1Bridge.address

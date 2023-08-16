@@ -23,6 +23,7 @@ export function TransferAction({
 
   const token = watch("token");
   const { decimals = 18 } = useSelectedToken()(token) || {};
+
   const { data: eth } = useBalance({ address });
   const { data: balance } = useTokenBalance({ chain, token });
   if (!address || network.chain?.unsupported) {
