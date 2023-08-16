@@ -1,10 +1,12 @@
 import { useState } from "react";
 
-import { MessageStatus } from "@eth-optimism/sdk";
+import { CrossChainMessenger, MessageStatus } from "@eth-optimism/sdk";
 import { useMutation } from "@tanstack/react-query";
 import { useCrossChainMessenger } from "./crossChainMessenger";
 import { Token } from "../types";
 import { useTokenAddresses } from "./useSelectedToken";
+import { ethers } from "ethers";
+import { erc20ABI } from "wagmi";
 
 type TransferRequest = {
   amount: string;
@@ -14,7 +16,6 @@ type TransferRequest = {
 // Deposit L1 tokens to L2
 export function useDeposit() {
   const [log, pushLog, resetLog] = useTransactionLog();
-
   const getTokenAddresses = useTokenAddresses();
   const { data: crossChainMessenger } = useCrossChainMessenger({
     l1AsSigner: true,
@@ -32,15 +33,22 @@ export function useDeposit() {
 
     // Deposit ERC20 tokens
     if (l1Address && l2Address) {
-      pushLog("Approving ERC20...");
-      const allowance = await crossChainMessenger.approveERC20(
+      const allowance = await getAllowanceERC20({
         l1Address,
         l2Address,
-        amount
-      );
+        crossChainMessenger,
+      });
 
-      pushLog(`Waiting for transaction with hash: ${allowance.hash}`);
-      await allowance.wait();
+      if (allowance.lt(amount)) {
+        pushLog("Approving ERC20...");
+        const approve = await crossChainMessenger.approveERC20(
+          l1Address,
+          l2Address,
+          amount
+        );
+        pushLog(`Waiting for transaction with hash: ${approve.hash}`);
+        await approve.wait();
+      }
 
       pushLog("Depositing ERC20...");
       res = await crossChainMessenger.depositERC20(
@@ -131,4 +139,28 @@ function useTransactionLog() {
       }),
     () => setLog([]),
   ];
+}
+
+async function getAllowanceERC20({
+  l1Address,
+  l2Address,
+  crossChainMessenger,
+}: {
+  l1Address: string;
+  l2Address: string;
+  crossChainMessenger: CrossChainMessenger;
+}) {
+  const contract = await new ethers.Contract(
+    l1Address,
+    erc20ABI,
+    crossChainMessenger.l1Signer
+  );
+  const bridge = await crossChainMessenger.getBridgeForTokenPair(
+    l1Address,
+    l2Address
+  );
+  return contract.allowance(
+    await crossChainMessenger.l1Signer.getAddress(),
+    bridge.l1Bridge.address
+  );
 }
