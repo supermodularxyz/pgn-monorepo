@@ -129,6 +129,12 @@ const TransactionsTable = memo(() => {
           </Button>
         ))}
       </div>
+      <div className="sm:hidden flex justify-end gap-1">
+        <Button disabled={!page} onClick={() => setPage(page - 1)}>
+          Previous
+        </Button>
+        <Button onClick={() => setPage(page + 1)}>Next</Button>
+      </div>
     </div>
   );
 });
