@@ -1,11 +1,10 @@
-import { PropsWithChildren, memo, useMemo } from "react";
+import { memo, useState } from "react";
 import { useAccount, useNetwork } from "wagmi";
 import { useQueryClient } from "@tanstack/react-query";
-import { TokenBridgeMessage } from "@eth-optimism/sdk";
 import toast from "react-hot-toast";
 import { ConnectWallet } from "./ConnectButton";
 import { Link } from "./ui/Link";
-import { SecondaryButton } from "./ui/Button";
+import { Button, SecondaryButton } from "./ui/Button";
 import { Alert, AlertTitle } from "./ui/Alert";
 import { Table, Tbody, Td, Th, Thead, Tr } from "./ui/Table";
 
@@ -15,6 +14,7 @@ import { truncate } from "../utils/truncate";
 import {
   useBlock,
   useChallengePeriod,
+  useEstimateWait,
   useFinalize,
   useProve,
   useWithdrawalReceipt,
@@ -25,6 +25,7 @@ import {
 import { usePGN } from "..";
 import { Skeleton } from "./ui/Skeleton";
 import { parseEthersError } from "../utils/revertReason";
+import clsx from "clsx";
 
 export const Transactions = memo(() => {
   const {
@@ -62,49 +63,72 @@ export const Transactions = memo(() => {
 });
 
 const TransactionsTable = memo(() => {
+  const [page, setPage] = useState(0);
   const { data, error, isLoading } = useWithdrawals();
   const { data: challengePeriod } = useChallengePeriod();
 
+  const PAGE_SIZE = 5;
+  const NUM_PAGES = Math.floor((data?.length ?? 0) / PAGE_SIZE);
+
+  const start = page * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
   return (
-    <div className="overflow-x-auto relative">
-      <Table>
-        <Thead className="sm:static absolute  hidden sm:table-header-group">
-          <Tr>
-            <Th>Hash</Th>
-            <Th>Status</Th>
-            <Th>Timestamp</Th>
-            <Th>L1 hash</Th>
-            <Th>Time left</Th>
-            <Th>Action</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {isLoading ? (
+    <div>
+      <div className="overflow-x-auto relative">
+        <Table>
+          <Thead className="sm:static absolute  hidden sm:table-header-group">
             <Tr>
-              {Array.from({ length: 6 }).map((_, i) => (
-                <Td key={i}>
-                  <Skeleton isLoading />
+              <Th>Hash</Th>
+              <Th>Status</Th>
+              <Th>Timestamp</Th>
+              <Th>L1 hash</Th>
+              <Th>Time left</Th>
+              <Th>Action</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {isLoading ? (
+              <Tr>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Td key={i}>
+                    <Skeleton isLoading />
+                  </Td>
+                ))}
+              </Tr>
+            ) : data?.length ? (
+              data
+                .slice(start, end)
+                .map(({ transactionHash, blockNumber }) => (
+                  <TransactionRow
+                    key={transactionHash}
+                    transactionHash={transactionHash}
+                    blockNumber={blockNumber}
+                    challengePeriod={challengePeriod}
+                  />
+                ))
+            ) : (
+              <Tr>
+                <Td colSpan={6} className="text-center">
+                  No transactions found
                 </Td>
-              ))}
-            </Tr>
-          ) : data?.length ? (
-            data.map(({ transactionHash, blockNumber }) => (
-              <TransactionRow
-                key={transactionHash}
-                challengePeriod={challengePeriod}
-                transactionHash={transactionHash}
-                blockNumber={blockNumber}
-              />
-            ))
-          ) : (
-            <Tr>
-              <Td colSpan={6} className="text-center">
-                No transactions found
-              </Td>
-            </Tr>
-          )}
-        </Tbody>
-      </Table>
+              </Tr>
+            )}
+          </Tbody>
+        </Table>
+      </div>
+      <div className="hidden sm:flex justify-end gap-2 overflow-x-auto">
+        {Array.from({ length: NUM_PAGES }).map((_, i) => (
+          <Button
+            key={i}
+            className={clsx("w-12", {
+              ["font-bold"]: i === page,
+            })}
+            onClick={() => setPage(i)}
+          >
+            {i + 1}
+          </Button>
+        ))}
+      </div>
     </div>
   );
 });
@@ -119,16 +143,19 @@ const withdrawStatusMap = {
 const TransactionRow = ({
   transactionHash,
   blockNumber,
-  challengePeriod = 0,
+  challengePeriod,
 }: {
   blockNumber: number;
   transactionHash: string;
-  challengePeriod?: number;
+  challengePeriod: number;
 }) => {
   const { data: timestamp = 0 } = useBlock(blockNumber);
   const {
     networks: { l1, l2 },
   } = usePGN();
+
+  const { data: wait = 0, error } = useEstimateWait(transactionHash);
+
   const status = useWithdrawalStatus(transactionHash);
   const receipt = useWithdrawalReceipt(transactionHash, status?.data as number);
   const l1hash = receipt.data?.transactionReceipt.transactionHash;
@@ -137,7 +164,8 @@ const TransactionRow = ({
     withdrawStatusMap[status.data as keyof typeof withdrawStatusMap] ||
     "<unknown>";
 
-  const timeLeft = timestamp ? timeAgo(timestamp + challengePeriod) : null;
+  const timeLeft =
+    wait && status.data === 4 ? timeAgo(wait + challengePeriod) : null;
   return (
     <Tr>
       <Td className="before:content-['Hash'] before:block sm:before:hidden justify-between">

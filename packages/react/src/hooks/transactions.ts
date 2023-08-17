@@ -1,26 +1,11 @@
 import { useAccount } from "wagmi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCrossChainMessenger } from "./crossChainMessenger";
+import { hashLowLevelMessage } from "@eth-optimism/sdk";
 
 const ONE_MINUTE = 1000 * 60;
 const ONE_HOUR = ONE_MINUTE * 60;
 const ONE_DAY = ONE_HOUR * 24;
-
-export function useChallengePeriod() {
-  const { data: crossChainMessenger } = useCrossChainMessenger({
-    readonly: true,
-  });
-  return useQuery(
-    ["challenge-period"],
-    async () =>
-      crossChainMessenger?.getChallengePeriodSeconds().then((n) => n * 1000),
-    {
-      enabled: Boolean(crossChainMessenger),
-      staleTime: ONE_DAY,
-      cacheTime: ONE_DAY,
-    }
-  );
-}
 
 export function useWithdrawals() {
   const { address } = useAccount();
@@ -87,6 +72,46 @@ export function useBlock(block: number) {
         .then((tx) => tx.timestamp * 1000),
     {
       enabled: Boolean(block && crossChainMessenger),
+      cacheTime: ONE_DAY,
+      staleTime: ONE_DAY,
+    }
+  );
+}
+export function useChallengePeriod() {
+  const { data: crossChainMessenger } = useCrossChainMessenger({
+    readonly: true,
+  });
+  return useQuery(
+    ["challenge-period"],
+    async () =>
+      crossChainMessenger?.getChallengePeriodSeconds().then((n) => n * 1000),
+    {
+      enabled: Boolean(crossChainMessenger),
+      staleTime: ONE_DAY,
+      cacheTime: ONE_DAY,
+    }
+  );
+}
+
+export function useEstimateWait(hash: string) {
+  const { data: crossChainMessenger } = useCrossChainMessenger({
+    readonly: true,
+  });
+  return useQuery(
+    ["wait", hash],
+    () => {
+      return crossChainMessenger
+        ?.toCrossChainMessage(hash)
+        .then((tx) => crossChainMessenger.toLowLevelMessage(tx))
+        .then((withdrawal) =>
+          crossChainMessenger.contracts.l1.OptimismPortal.provenWithdrawals(
+            hashLowLevelMessage(withdrawal)
+          )
+        )
+        .then((tx) => tx.timestamp * 1000);
+    },
+    {
+      enabled: Boolean(hash && crossChainMessenger),
       cacheTime: ONE_DAY,
       staleTime: ONE_DAY,
     }
