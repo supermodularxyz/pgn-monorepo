@@ -9,9 +9,9 @@ const Error = createComponent(
 );
 
 export const ErrorMessage = themeComponent(
-  ({ error, ...props }: { error?: { message: string } }) => {
+  ({ error, ...props }: { error?: { message: string; reason?: string } }) => {
     if (!error?.message) return null;
-    return <Error {...props}>{error?.message}</Error>;
+    return <Error {...props}>{error?.reason ?? error?.message}</Error>;
   },
   ["error"]
 );
