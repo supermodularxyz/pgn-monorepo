@@ -41,7 +41,7 @@ const navItems = [
     href: "/",
   },
   {
-    label: "Transactions",
+    label: "Withdrawals",
     href: "/transactions",
   },
   {

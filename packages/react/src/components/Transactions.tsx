@@ -109,7 +109,7 @@ const TransactionsTable = memo(() => {
             ) : (
               <Tr>
                 <Td colSpan={6} className="text-center">
-                  No transactions found
+                  No withdrawals found
                 </Td>
               </Tr>
             )}

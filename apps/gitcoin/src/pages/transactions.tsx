@@ -6,7 +6,7 @@ export default function TransactionsPage() {
   return (
     <Layout>
       <div className="pb-16 pt-4">
-        <h1 className="mb-4 text-3xl font-bold">Transactions</h1>
+        <h1 className="mb-4 text-3xl font-bold">Withdrawals</h1>
         <Transactions />
       </div>
     </Layout>
