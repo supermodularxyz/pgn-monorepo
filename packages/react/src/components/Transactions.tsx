@@ -143,11 +143,11 @@ const withdrawStatusMap = {
 const TransactionRow = ({
   transactionHash,
   blockNumber,
-  challengePeriod,
+  challengePeriod = 0,
 }: {
   blockNumber: number;
   transactionHash: string;
-  challengePeriod: number;
+  challengePeriod?: number;
 }) => {
   const { data: timestamp = 0 } = useBlock(blockNumber);
   const {
