@@ -32,3 +32,22 @@ export const TestToken = {
     },
   },
 };
+
+export const GTC = {
+  name: "GTC",
+  symbol: "GTC",
+  tokens: {
+    mainnet: {
+      address: "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
+    },
+    homestead: {
+      address: "0xde30da39c46104798bb5aa3fe8b9e0e1f348163f",
+    },
+    pgnTestnet: {
+      address: "",
+    },
+    pgn: {
+      address: "0x7c6b91D9Be155A6Db01f749217d76fF02A7227F2",
+    },
+  },
+};
